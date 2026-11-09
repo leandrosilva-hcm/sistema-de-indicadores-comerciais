@@ -143,7 +143,15 @@ export function DashboardView({
       return pDate >= firstDayOfMonth;
     }).length;
 
-    // Total de Interações no período
+    // Total de Interações na Semana (e no período)
+    const day = now.getDay();
+    const diff = now.getDate() - day + (day === 0 ? -6 : 1);
+    const startOfWeek = new Date(now.getFullYear(), now.getMonth(), diff, 0, 0, 0);
+    const weekInteractionsCount = filteredInteractions.filter((i) => {
+      const iDate = new Date(i.interactionDate);
+      return iDate >= startOfWeek;
+    }).length;
+
     const totalInteractionsCount = filteredInteractions.length;
 
     // Reuniões Presenciais Realizadas no período
@@ -155,6 +163,7 @@ export function DashboardView({
       activeProjectsCount: activeProjects.length,
       activeTotalValue,
       newProjectsMonth,
+      weekInteractionsCount,
       totalInteractionsCount,
       presencialCount,
     };
@@ -229,23 +238,6 @@ export function DashboardView({
     setSelectedPeriod("mes");
     setSelectedUser("");
   };
-
-  if (!isMounted) {
-    return (
-      <div className="space-y-6 animate-pulse">
-        <div className="h-16 bg-card rounded-xl border border-border" />
-        <div className="grid grid-cols-4 gap-4">
-          {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="h-28 bg-card rounded-xl border border-border" />
-          ))}
-        </div>
-        <div className="grid grid-cols-2 gap-4">
-          <div className="h-80 bg-card rounded-xl border border-border" />
-          <div className="h-80 bg-card rounded-xl border border-border" />
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-6">
@@ -387,11 +379,11 @@ export function DashboardView({
           </CardContent>
         </Card>
 
-        {/* KPI 3: Total de Interações no Período */}
+        {/* KPI 3: Total de Interações na Semana */}
         <Card className="p-4 border-border/80 shadow-xs">
           <CardHeader className="flex flex-row items-center justify-between p-0 pb-2">
             <CardTitle className="text-xs font-semibold text-muted-foreground">
-              Total de Interações
+              Total de Interações na Semana
             </CardTitle>
             <div className="p-2 bg-purple-500/10 text-purple-600 dark:text-purple-400 rounded-lg">
               <Phone className="size-4" />
@@ -399,19 +391,19 @@ export function DashboardView({
           </CardHeader>
           <CardContent className="p-0">
             <div className="text-2xl font-bold text-foreground tabular-nums">
-              {kpis.totalInteractionsCount}
+              {kpis.weekInteractionsCount}
             </div>
             <p className="mt-1 text-xs text-muted-foreground">
-              Tratativas realizadas no período
+              {kpis.totalInteractionsCount} interações acumuladas
             </p>
           </CardContent>
         </Card>
 
-        {/* KPI 4: Reuniões Presenciais */}
+        {/* KPI 4: Reuniões Presenciais Realizadas */}
         <Card className="p-4 border-border/80 shadow-xs">
           <CardHeader className="flex flex-row items-center justify-between p-0 pb-2">
             <CardTitle className="text-xs font-semibold text-muted-foreground">
-              Reuniões Presenciais
+              Reuniões Presenciais Realizadas
             </CardTitle>
             <div className="p-2 bg-amber-500/10 text-amber-600 dark:text-amber-400 rounded-lg">
               <Users className="size-4" />
@@ -447,45 +439,49 @@ export function DashboardView({
           </CardHeader>
           <CardContent className="pt-5 pb-2">
             <div className="h-80 w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={productivityData} margin={{ top: 10, right: 10, left: -20, bottom: 10 }}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.2} />
-                  <XAxis
-                    dataKey="name"
-                    tick={{ fontSize: 11 }}
-                    tickLine={false}
-                    axisLine={{ stroke: "#e2e8f0" }}
-                  />
-                  <YAxis
-                    tick={{ fontSize: 11 }}
-                    tickLine={false}
-                    axisLine={false}
-                    allowDecimals={false}
-                  />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: "rgba(255, 255, 255, 0.95)",
-                      borderRadius: "8px",
-                      border: "1px solid #e2e8f0",
-                      boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
-                      fontSize: "12px",
-                      color: "#1e293b",
-                    }}
-                  />
-                  <Legend
-                    wrapperStyle={{ fontSize: "11px", paddingTop: "10px" }}
-                    formatter={(val) => {
-                      if (val === "ligacoes") return "Ligações Telefônicas";
-                      if (val === "reunioesOnline") return "Reuniões Online";
-                      if (val === "reunioesPresenciais") return "Reuniões Presenciais";
-                      return val;
-                    }}
-                  />
-                  <Bar dataKey="ligacoes" name="ligacoes" fill="#f59e0b" radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="reunioesOnline" name="reunioesOnline" fill="#3b82f6" radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="reunioesPresenciais" name="reunioesPresenciais" fill="#10b981" radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
+              {isMounted ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={productivityData} margin={{ top: 10, right: 10, left: -20, bottom: 10 }}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.2} />
+                    <XAxis
+                      dataKey="name"
+                      tick={{ fontSize: 11 }}
+                      tickLine={false}
+                      axisLine={{ stroke: "#e2e8f0" }}
+                    />
+                    <YAxis
+                      tick={{ fontSize: 11 }}
+                      tickLine={false}
+                      axisLine={false}
+                      allowDecimals={false}
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: "rgba(255, 255, 255, 0.95)",
+                        borderRadius: "8px",
+                        border: "1px solid #e2e8f0",
+                        boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+                        fontSize: "12px",
+                        color: "#1e293b",
+                      }}
+                    />
+                    <Legend
+                      wrapperStyle={{ fontSize: "11px", paddingTop: "10px" }}
+                      formatter={(val) => {
+                        if (val === "ligacoes") return "Ligações Telefônicas";
+                        if (val === "reunioesOnline") return "Reuniões Online";
+                        if (val === "reunioesPresenciais") return "Reuniões Presenciais";
+                        return val;
+                      }}
+                    />
+                    <Bar dataKey="ligacoes" name="ligacoes" fill="#f59e0b" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="reunioesOnline" name="reunioesOnline" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="reunioesPresenciais" name="reunioesPresenciais" fill="#10b981" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="h-full w-full bg-muted/20 animate-pulse rounded-lg" />
+              )}
             </div>
           </CardContent>
         </Card>
@@ -507,43 +503,47 @@ export function DashboardView({
           </CardHeader>
           <CardContent className="pt-5 pb-2">
             <div className="h-80 w-full flex items-center justify-center">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={segmentData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={70}
-                    outerRadius={105}
-                    paddingAngle={4}
-                    dataKey="value"
-                    label={({ name, percent }: any) =>
-                      `${name}: ${((percent ?? 0) * 100).toFixed(0)}%`
-                    }
-                    labelLine={false}
-                  >
-                    {segmentData.map((entry, index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={SEGMENT_COLORS[index % SEGMENT_COLORS.length]}
-                      />
-                    ))}
-                  </Pie>
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: "rgba(255, 255, 255, 0.95)",
-                      borderRadius: "8px",
-                      border: "1px solid #e2e8f0",
-                      fontSize: "12px",
-                      color: "#1e293b",
-                    }}
-                    formatter={(val: any, name: any) => [`${val} projeto(s)`, name]}
-                  />
-                  <Legend
-                    wrapperStyle={{ fontSize: "11px", paddingTop: "10px" }}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
+              {isMounted ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={segmentData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={70}
+                      outerRadius={105}
+                      paddingAngle={4}
+                      dataKey="value"
+                      label={({ name, percent }: any) =>
+                        `${name}: ${((percent ?? 0) * 100).toFixed(0)}%`
+                      }
+                      labelLine={false}
+                    >
+                      {segmentData.map((entry, index) => (
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={SEGMENT_COLORS[index % SEGMENT_COLORS.length]}
+                        />
+                      ))}
+                    </Pie>
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: "rgba(255, 255, 255, 0.95)",
+                        borderRadius: "8px",
+                        border: "1px solid #e2e8f0",
+                        fontSize: "12px",
+                        color: "#1e293b",
+                      }}
+                      formatter={(val: any, name: any) => [`${val} projeto(s)`, name]}
+                    />
+                    <Legend
+                      wrapperStyle={{ fontSize: "11px", paddingTop: "10px" }}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="h-full w-full bg-muted/20 animate-pulse rounded-lg" />
+              )}
             </div>
           </CardContent>
         </Card>
@@ -566,35 +566,39 @@ export function DashboardView({
         </CardHeader>
         <CardContent className="pt-5 pb-4">
           <div className="h-64 w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={funnelData} layout="vertical" margin={{ top: 5, right: 30, left: 40, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" horizontal={false} opacity={0.2} />
-                <XAxis
-                  type="number"
-                  tick={{ fontSize: 11 }}
-                  tickFormatter={(val) => `R$ ${val}M`}
-                  axisLine={{ stroke: "#e2e8f0" }}
-                />
-                <YAxis
-                  type="category"
-                  dataKey="stage"
-                  tick={{ fontSize: 11 }}
-                  tickLine={false}
-                  width={140}
-                />
-                <Tooltip
-                  formatter={(val: any) => [`R$ ${Number(val).toFixed(1)}M`, "Valor Estimado"]}
-                  contentStyle={{
-                    backgroundColor: "rgba(255, 255, 255, 0.95)",
-                    borderRadius: "8px",
-                    border: "1px solid #e2e8f0",
-                    fontSize: "12px",
-                    color: "#1e293b",
-                  }}
-                />
-                <Bar dataKey="value" fill="#6366f1" radius={[0, 4, 4, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+            {isMounted ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={funnelData} layout="vertical" margin={{ top: 5, right: 30, left: 40, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" horizontal={false} opacity={0.2} />
+                  <XAxis
+                    type="number"
+                    tick={{ fontSize: 11 }}
+                    tickFormatter={(val) => `R$ ${val}M`}
+                    axisLine={{ stroke: "#e2e8f0" }}
+                  />
+                  <YAxis
+                    type="category"
+                    dataKey="stage"
+                    tick={{ fontSize: 11 }}
+                    tickLine={false}
+                    width={140}
+                  />
+                  <Tooltip
+                    formatter={(val: any) => [`R$ ${Number(val).toFixed(1)}M`, "Valor Estimado"]}
+                    contentStyle={{
+                      backgroundColor: "rgba(255, 255, 255, 0.95)",
+                      borderRadius: "8px",
+                      border: "1px solid #e2e8f0",
+                      fontSize: "12px",
+                      color: "#1e293b",
+                    }}
+                  />
+                  <Bar dataKey="value" fill="#6366f1" radius={[0, 4, 4, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="h-full w-full bg-muted/20 animate-pulse rounded-lg" />
+            )}
           </div>
         </CardContent>
       </Card>

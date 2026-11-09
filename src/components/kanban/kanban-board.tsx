@@ -12,6 +12,7 @@ import {
 import { KanbanColumn } from "./kanban-column";
 import { KanbanFilters } from "./kanban-filters";
 import { ProjectDrawer } from "./project-drawer";
+import { NewProjectDialog } from "./new-project-dialog";
 import { updateProjectStage } from "@/app/actions/projects";
 
 interface KanbanBoardProps {
@@ -36,6 +37,7 @@ export function KanbanBoard({
   // Drawer lateral interativo (Etapa 4)
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isNewProjectOpen, setIsNewProjectOpen] = useState(false);
 
   // Prevent SSR hydration mismatch for drag-and-drop
   useEffect(() => {
@@ -156,24 +158,6 @@ export function KanbanBoard({
     setSearchQuery("");
   };
 
-  if (!isMounted) {
-    return (
-      <div className="space-y-4">
-        {/* Skeleton Filters */}
-        <div className="h-16 w-full rounded-xl bg-card border border-border animate-pulse" />
-        {/* Skeleton Columns */}
-        <div className="flex gap-4 overflow-x-auto pb-4">
-          {KANBAN_STAGES.map((s) => (
-            <div
-              key={s.id}
-              className="h-[550px] w-80 shrink-0 rounded-xl bg-muted/30 border border-border animate-pulse"
-            />
-          ))}
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="flex flex-col gap-5 h-full">
       {/* Top Controls & Filters */}
@@ -187,24 +171,36 @@ export function KanbanBoard({
         onSegmentChange={setSelectedSegment}
         onSearchChange={setSearchQuery}
         onReset={handleResetFilters}
+        onNewProjectClick={() => setIsNewProjectOpen(true)}
         totalProjects={projects.length}
         filteredCount={filteredProjects.length}
         totalPipelineValue={totalPipelineValue}
       />
 
       {/* Drag & Drop Board */}
-      <DragDropContext onDragEnd={handleDragEnd}>
-        <div className="flex flex-1 gap-4 overflow-x-auto pb-6 pt-1 select-none">
-          {KANBAN_STAGES.map((stage) => (
-            <KanbanColumn
-              key={stage.id}
-              stage={stage}
-              projects={projectsByStage[stage.id] || []}
-              onCardClick={handleCardClick}
+      {isMounted ? (
+        <DragDropContext onDragEnd={handleDragEnd}>
+          <div className="flex flex-1 gap-4 overflow-x-auto pb-6 pt-1 select-none">
+            {KANBAN_STAGES.map((stage) => (
+              <KanbanColumn
+                key={stage.id}
+                stage={stage}
+                projects={projectsByStage[stage.id] || []}
+                onCardClick={handleCardClick}
+              />
+            ))}
+          </div>
+        </DragDropContext>
+      ) : (
+        <div className="flex gap-4 overflow-x-auto pb-6 pt-1">
+          {KANBAN_STAGES.map((s) => (
+            <div
+              key={s.id}
+              className="h-[550px] w-80 shrink-0 rounded-xl bg-muted/30 border border-border animate-pulse"
             />
           ))}
         </div>
-      </DragDropContext>
+      )}
 
       {/* Drawer Lateral Interativo (RF03, RF04, RN01, RN02) */}
       <ProjectDrawer
@@ -213,6 +209,15 @@ export function KanbanBoard({
         onClose={() => setIsDrawerOpen(false)}
         users={users}
         onProjectUpdated={handleProjectUpdated}
+      />
+
+      {/* Modal de Criação de Projeto (RF01) */}
+      <NewProjectDialog
+        isOpen={isNewProjectOpen}
+        onClose={() => setIsNewProjectOpen(false)}
+        users={users}
+        segments={segments}
+        onProjectCreated={handleProjectUpdated}
       />
     </div>
   );

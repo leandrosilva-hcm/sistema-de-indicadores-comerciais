@@ -175,8 +175,9 @@ export async function GET() {
     ];
 
     // Adiciona as 3 abas na mesma planilha
-    XLSX.utils.book_append_sheet(wb, wsProjects, "Projetos e Status");
-    XLSX.utils.book_append_sheet(wb, wsContacts, "Decisores e Contatos");
+    // Nota: O limite do padrão Excel/SheetJS para nome de abas é de 31 caracteres
+    XLSX.utils.book_append_sheet(wb, wsProjects, "Projetos e Status Atual");
+    XLSX.utils.book_append_sheet(wb, wsContacts, "Banco de Decisores e Contatos");
     XLSX.utils.book_append_sheet(wb, wsInteractions, "Histórico e Agendamentos");
 
     // Gera o buffer binário

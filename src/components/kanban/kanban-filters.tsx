@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ExportExcelButton } from "@/components/export-excel-button";
-import { Search, Filter, RotateCcw, User, Layers, DollarSign } from "lucide-react";
+import { Search, Filter, RotateCcw, User, Layers, DollarSign, Plus } from "lucide-react";
 
 interface KanbanFiltersProps {
   users: FilterUser[];
@@ -17,6 +17,7 @@ interface KanbanFiltersProps {
   onSegmentChange: (segmentId: string) => void;
   onSearchChange: (query: string) => void;
   onReset: () => void;
+  onNewProjectClick?: () => void;
   totalProjects: number;
   filteredCount: number;
   totalPipelineValue: number;
@@ -32,6 +33,7 @@ export function KanbanFilters({
   onSegmentChange,
   onSearchChange,
   onReset,
+  onNewProjectClick,
   totalProjects,
   filteredCount,
   totalPipelineValue,
@@ -119,8 +121,19 @@ export function KanbanFilters({
           )}
         </div>
 
-        {/* Right side: Pipeline Totals & Export */}
-        <div className="flex items-center gap-2.5 shrink-0">
+        {/* Right side: Pipeline Totals, Export & New Project */}
+        <div className="flex items-center gap-2 shrink-0">
+          {onNewProjectClick && (
+            <Button
+              onClick={onNewProjectClick}
+              size="xs"
+              className="gap-1 font-semibold text-xs cursor-pointer bg-primary text-primary-foreground hover:bg-primary/90"
+            >
+              <Plus className="size-3.5" />
+              Novo Projeto
+            </Button>
+          )}
+
           <ExportExcelButton size="xs" />
 
           <div className="flex items-center gap-1.5 bg-muted/50 px-2.5 py-1 rounded-lg border border-border/60">

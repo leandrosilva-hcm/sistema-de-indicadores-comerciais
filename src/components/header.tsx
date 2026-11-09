@@ -21,6 +21,10 @@ const pageTitles: Record<string, { title: string; description: string }> = {
     title: "Dashboard Gerencial",
     description: "Indicadores de desempenho comercial",
   },
+  "/segmentos": {
+    title: "Parametrização de Segmentos",
+    description: "Gestão dos nichos e segmentos de mercado",
+  },
 };
 
 export function Header() {

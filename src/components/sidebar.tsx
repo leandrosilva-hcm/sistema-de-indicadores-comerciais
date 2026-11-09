@@ -10,6 +10,7 @@ import {
   Building2,
   ChevronLeft,
   ChevronRight,
+  Layers,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -39,6 +40,12 @@ const navItems = [
     href: "/dashboard",
     icon: LayoutDashboard,
     description: "Indicadores gerenciais",
+  },
+  {
+    label: "Segmentos",
+    href: "/segmentos",
+    icon: Layers,
+    description: "Parametrização de mercado",
   },
 ];
 

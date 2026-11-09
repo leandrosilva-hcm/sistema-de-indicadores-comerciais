@@ -207,19 +207,19 @@ export function ProjectDrawer({
     switch (ch) {
       case "reuniao_presencial":
         return (
-          <Badge className="bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-300 gap-1">
+          <Badge className="bg-[#dc911b] text-black border-[#c47d12] font-semibold gap-1">
             <Users className="size-3" /> Reunião Presencial
           </Badge>
         );
       case "reuniao_online":
         return (
-          <Badge className="bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-300 gap-1">
+          <Badge className="bg-slate-900 text-white border-slate-700 gap-1">
             <Video className="size-3" /> Reunião Online
           </Badge>
         );
       case "ligacao":
         return (
-          <Badge className="bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-300 gap-1">
+          <Badge className="bg-[#dc911b]/15 text-[#9a600a] dark:text-[#f3b558] border-[#dc911b]/30 gap-1 font-medium">
             <Phone className="size-3" /> Ligação Telefônica
           </Badge>
         );
@@ -474,13 +474,13 @@ export function ProjectDrawer({
                   )}
                 </div>
 
-                {/* 2. CARD DE DESTAQUE: ÚLTIMA TRATATIVA REALIZADA (RN02) */}
-                <Card className="border-2 border-primary/30 bg-primary/5 shadow-xs">
+                {/* 2. CARD DE DESTAQUE: ÚLTIMA TRATATIVA REALIZADA (RN02) - Acento Oficial HCM */}
+                <Card className="border-l-4 border-l-[#dc911b] border-y border-r border-[#dc911b]/30 bg-[#dc911b]/5 shadow-xs">
                   <CardHeader className="p-4 pb-2">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-1.5">
-                        <Sparkles className="size-4 text-primary" />
-                        <CardTitle className="text-xs uppercase tracking-wider font-bold text-primary">
+                        <Sparkles className="size-4 text-[#dc911b]" />
+                        <CardTitle className="text-xs uppercase tracking-wider font-bold text-[#dc911b]">
                           Última Tratativa Realizada (RN02)
                         </CardTitle>
                       </div>
@@ -494,9 +494,9 @@ export function ProjectDrawer({
                           {lastInteraction.summary}
                         </p>
 
-                        <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-primary/20 text-xs text-muted-foreground">
+                        <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-[#dc911b]/20 text-xs text-muted-foreground">
                           <span className="flex items-center gap-1 font-medium">
-                            <User className="size-3 text-primary" />
+                            <User className="size-3 text-[#dc911b]" />
                             Registrado por:{" "}
                             <strong className="text-foreground">
                               {lastInteraction.author.name}
@@ -510,9 +510,9 @@ export function ProjectDrawer({
 
                         {/* Próxima Ação Agendada vinculada */}
                         {lastInteraction.tasks?.[0] && (
-                          <div className="mt-2 p-2.5 rounded-lg bg-background border border-primary/20 flex items-start justify-between gap-2 text-xs">
+                          <div className="mt-2 p-2.5 rounded-lg bg-background border border-[#dc911b]/30 flex items-start justify-between gap-2 text-xs">
                             <div className="flex items-start gap-1.5">
-                              <CalendarCheck2 className="size-3.5 text-primary shrink-0 mt-0.5" />
+                              <CalendarCheck2 className="size-3.5 text-[#dc911b] shrink-0 mt-0.5" />
                               <div>
                                 <span className="font-semibold text-foreground text-xs block">
                                   Próxima Ação Agendada:

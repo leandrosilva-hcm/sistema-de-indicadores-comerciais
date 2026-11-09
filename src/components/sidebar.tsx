@@ -2,15 +2,15 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import Image from "next/image";
 import {
   LayoutDashboard,
   Kanban,
   Clock,
   CalendarDays,
-  Building2,
+  Layers,
   ChevronLeft,
   ChevronRight,
-  Layers,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -56,48 +56,73 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        "flex flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground transition-all duration-300",
-        collapsed ? "w-16" : "w-64"
+        "flex flex-col border-r border-zinc-850 bg-black text-white transition-all duration-300 shrink-0 select-none z-30",
+        collapsed ? "w-18" : "w-64"
       )}
     >
-      {/* Header */}
-      <div className="flex h-16 items-center gap-2 border-b border-sidebar-border px-4">
-        <Building2 className="size-6 shrink-0 text-sidebar-primary" />
+      {/* Header com Logotipo Oficial da HCM Engenharia */}
+      <div className="flex h-16 items-center gap-3 border-b border-zinc-800/80 px-4 bg-black">
+        <div className="relative size-9 shrink-0 flex items-center justify-center rounded-md bg-zinc-900/60 p-1 border border-zinc-800">
+          <Image
+            src="/hcm-logo.png"
+            alt="HCM Engenharia"
+            width={32}
+            height={32}
+            className="object-contain"
+            priority
+          />
+        </div>
+
         {!collapsed && (
           <div className="flex flex-col overflow-hidden">
-            <span className="truncate text-sm font-semibold text-sidebar-foreground">
-              Indicadores
+            <span className="truncate text-sm font-extrabold tracking-wider text-white">
+              HCM ENGENHARIA
             </span>
-            <span className="truncate text-xs text-muted-foreground">
-              Gestão Comercial
+            <span className="truncate text-[10px] font-bold uppercase tracking-widest text-[#dc911b]">
+              Painel Comercial
             </span>
           </div>
         )}
       </div>
 
-      {/* Navigation */}
-      <nav className="flex-1 space-y-1 p-2">
+      {/* Navigation Links */}
+      <nav className="flex-1 space-y-1.5 p-3">
         {navItems.map((item) => {
           const isActive =
             pathname === item.href || pathname?.startsWith(item.href + "/");
+
           return (
             <Link
               key={item.href}
               href={item.href}
               className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+                "group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-all duration-150",
                 isActive
-                  ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                  : "text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                  ? "bg-[#dc911b] text-black font-semibold shadow-xs"
+                  : "text-zinc-400 hover:bg-zinc-900/90 hover:text-white",
                 collapsed && "justify-center px-2"
               )}
               title={collapsed ? item.label : undefined}
             >
-              <item.icon className="size-5 shrink-0" />
+              <item.icon
+                className={cn(
+                  "size-5 shrink-0 transition-colors",
+                  isActive
+                    ? "text-black"
+                    : "text-zinc-400 group-hover:text-[#dc911b]"
+                )}
+              />
               {!collapsed && (
                 <div className="flex flex-col overflow-hidden">
-                  <span className="truncate">{item.label}</span>
-                  <span className="truncate text-xs font-normal text-muted-foreground">
+                  <span className="truncate leading-tight">{item.label}</span>
+                  <span
+                    className={cn(
+                      "truncate text-[11px] font-normal transition-colors",
+                      isActive
+                        ? "text-black/80 font-medium"
+                        : "text-zinc-500 group-hover:text-zinc-400"
+                    )}
+                  >
                     {item.description}
                   </span>
                 </div>
@@ -107,22 +132,30 @@ export function Sidebar() {
         })}
       </nav>
 
-      {/* Collapse Toggle */}
-      <div className="border-t border-sidebar-border p-2">
+      {/* Footer com Toggle de Recolhimento */}
+      <div className="border-t border-zinc-800/80 p-3 bg-black">
         <Button
           variant="ghost"
-          size="icon-sm"
+          size="sm"
           onClick={() => setCollapsed(!collapsed)}
-          className={cn("w-full", collapsed ? "justify-center" : "justify-end")}
+          className={cn(
+            "w-full text-zinc-400 hover:text-white hover:bg-zinc-900 border border-transparent hover:border-zinc-800 transition-colors cursor-pointer",
+            collapsed ? "justify-center px-0" : "justify-between px-3"
+          )}
+          title={collapsed ? "Expandir barra lateral" : "Recolher barra lateral"}
         >
+          {!collapsed && (
+            <span className="text-xs text-zinc-400 font-medium">
+              Recolher menu
+            </span>
+          )}
           {collapsed ? (
-            <ChevronRight className="size-4" />
+            <ChevronRight className="size-4 text-[#dc911b]" />
           ) : (
-            <ChevronLeft className="size-4" />
+            <ChevronLeft className="size-4 text-zinc-400" />
           )}
         </Button>
       </div>
     </aside>
   );
 }
-

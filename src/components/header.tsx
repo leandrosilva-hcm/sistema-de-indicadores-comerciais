@@ -44,8 +44,8 @@ export function Header() {
       </div>
       <div className="flex items-center gap-3">
         <ExportExcelButton />
-        <Badge variant="outline" className="text-xs">
-          v1.0
+        <Badge className="bg-[#dc911b]/15 text-[#9a600a] dark:text-[#f3b558] border-[#dc911b]/30 font-semibold text-xs">
+          HCM Engenharia
         </Badge>
       </div>
     </header>

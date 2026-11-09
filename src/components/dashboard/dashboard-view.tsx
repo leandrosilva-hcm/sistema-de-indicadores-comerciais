@@ -65,12 +65,12 @@ interface DashboardViewProps {
 }
 
 const SEGMENT_COLORS = [
-  "#3b82f6", // azul
-  "#10b981", // verde
-  "#f59e0b", // âmbar
-  "#8b5cf6", // roxo
-  "#ec4899", // rosa
-  "#06b6d4", // ciano
+  "#dc911b", // Brand Primary (Ocre HCM)
+  "#0f172a", // Preto Slate
+  "#334155", // Cinza Escuro Slate 700
+  "#64748b", // Cinza Médio Slate 500
+  "#c47d12", // Ocre Escuro Hover
+  "#94a3b8", // Cinza Claro Slate 400
 ];
 
 export function DashboardView({
@@ -342,7 +342,7 @@ export function DashboardView({
             <CardTitle className="text-xs font-semibold text-muted-foreground">
               Total de Projetos Ativos
             </CardTitle>
-            <div className="p-2 bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded-lg">
+            <div className="p-2 bg-[#dc911b]/15 text-[#dc911b] rounded-lg">
               <Layers className="size-4" />
             </div>
           </CardHeader>
@@ -365,12 +365,12 @@ export function DashboardView({
             <CardTitle className="text-xs font-semibold text-muted-foreground">
               Novos Projetos no Mês
             </CardTitle>
-            <div className="p-2 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-lg">
+            <div className="p-2 bg-black/10 text-black dark:text-white dark:bg-white/10 rounded-lg">
               <TrendingUp className="size-4" />
             </div>
           </CardHeader>
           <CardContent className="p-0">
-            <div className="text-2xl font-bold text-emerald-700 dark:text-emerald-400 tabular-nums">
+            <div className="text-2xl font-bold text-foreground tabular-nums">
               {kpis.newProjectsMonth}
             </div>
             <p className="mt-1 text-xs text-muted-foreground">
@@ -385,7 +385,7 @@ export function DashboardView({
             <CardTitle className="text-xs font-semibold text-muted-foreground">
               Total de Interações na Semana
             </CardTitle>
-            <div className="p-2 bg-purple-500/10 text-purple-600 dark:text-purple-400 rounded-lg">
+            <div className="p-2 bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-200 rounded-lg">
               <Phone className="size-4" />
             </div>
           </CardHeader>
@@ -405,12 +405,12 @@ export function DashboardView({
             <CardTitle className="text-xs font-semibold text-muted-foreground">
               Reuniões Presenciais Realizadas
             </CardTitle>
-            <div className="p-2 bg-amber-500/10 text-amber-600 dark:text-amber-400 rounded-lg">
+            <div className="p-2 bg-[#dc911b] text-black font-semibold rounded-lg shadow-xs">
               <Users className="size-4" />
             </div>
           </CardHeader>
           <CardContent className="p-0">
-            <div className="text-2xl font-bold text-amber-700 dark:text-amber-400 tabular-nums">
+            <div className="text-2xl font-bold text-[#dc911b] tabular-nums">
               {kpis.presencialCount}
             </div>
             <p className="mt-1 text-xs text-muted-foreground">
@@ -474,9 +474,9 @@ export function DashboardView({
                         return val;
                       }}
                     />
-                    <Bar dataKey="ligacoes" name="ligacoes" fill="#f59e0b" radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="reunioesOnline" name="reunioesOnline" fill="#3b82f6" radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="reunioesPresenciais" name="reunioesPresenciais" fill="#10b981" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="reunioesPresenciais" name="reunioesPresenciais" fill="#dc911b" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="reunioesOnline" name="reunioesOnline" fill="#334155" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="ligacoes" name="ligacoes" fill="#64748b" radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               ) : (
@@ -593,7 +593,7 @@ export function DashboardView({
                       color: "#1e293b",
                     }}
                   />
-                  <Bar dataKey="value" fill="#6366f1" radius={[0, 4, 4, 0]} />
+                  <Bar dataKey="value" fill="#dc911b" radius={[0, 4, 4, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             ) : (

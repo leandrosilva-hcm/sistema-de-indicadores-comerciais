@@ -13,7 +13,6 @@ import {
   Video,
   Users,
   Clock,
-  Briefcase,
 } from "lucide-react";
 
 interface KanbanCardProps {
@@ -52,11 +51,11 @@ export function KanbanCard({ project, index, onClick }: KanbanCardProps) {
   const getChannelIcon = (channel?: string) => {
     switch (channel) {
       case "reuniao_presencial":
-        return <Users className="size-3 text-emerald-600 dark:text-emerald-400" />;
+        return <Users className="size-3 text-[#dc911b]" />;
       case "reuniao_online":
-        return <Video className="size-3 text-blue-600 dark:text-blue-400" />;
+        return <Video className="size-3 text-slate-700 dark:text-slate-300" />;
       case "ligacao":
-        return <Phone className="size-3 text-amber-600 dark:text-amber-400" />;
+        return <Phone className="size-3 text-[#c47d12]" />;
       default:
         return <Clock className="size-3 text-muted-foreground" />;
     }
@@ -88,8 +87,8 @@ export function KanbanCard({ project, index, onClick }: KanbanCardProps) {
           <Card
             className={`group cursor-grab active:cursor-grabbing border border-border/80 bg-card transition-all duration-200 select-none ${
               snapshot.isDragging
-                ? "shadow-xl ring-2 ring-primary/40 rotate-1 scale-[1.02] bg-card/95"
-                : "hover:shadow-md hover:border-primary/40"
+                ? "shadow-xl ring-2 ring-[#dc911b] rotate-1 scale-[1.02] bg-card/95"
+                : "hover:shadow-md hover:border-[#dc911b]/60"
             }`}
           >
             <CardContent className="p-3.5 space-y-3">
@@ -113,7 +112,7 @@ export function KanbanCard({ project, index, onClick }: KanbanCardProps) {
 
               {/* Project Name */}
               <div>
-                <h4 className="text-sm font-semibold text-foreground leading-snug line-clamp-2 group-hover:text-primary transition-colors">
+                <h4 className="text-sm font-semibold text-foreground leading-snug line-clamp-2 group-hover:text-[#dc911b] transition-colors">
                   {project.projectName}
                 </h4>
               </div>
@@ -121,39 +120,39 @@ export function KanbanCard({ project, index, onClick }: KanbanCardProps) {
               {/* Key Metrics: Valor Estimado & Responsável */}
               <div className="grid grid-cols-2 gap-2 pt-1 border-t border-border/50 text-xs">
                 <div className="flex items-center gap-1 text-muted-foreground">
-                  <DollarSign className="size-3.5 shrink-0 text-emerald-600 dark:text-emerald-400" />
+                  <DollarSign className="size-3.5 shrink-0 text-[#dc911b]" />
                   <span className="font-semibold text-foreground truncate">
                     {formatCurrency(project.estimatedValue)}
                   </span>
                 </div>
 
                 <div className="flex items-center gap-1 justify-end text-muted-foreground">
-                  <User className="size-3.5 shrink-0 text-primary/70" />
+                  <User className="size-3.5 shrink-0 text-muted-foreground" />
                   <span className="truncate max-w-[100px] font-medium text-foreground">
                     {project.owner.name.split(" ")[0]}
                   </span>
                 </div>
               </div>
 
-              {/* Bottom row: Última Interação / Previsão */}
-              <div className="pt-2 border-t border-border/40 flex items-center justify-between gap-1 text-[11px] text-muted-foreground">
+              {/* Bottom row: Última Interação com Borda de Destaque #dc911b (RN02) */}
+              <div className="pt-2 border-t border-border/40 flex items-center justify-between gap-1.5 text-[11px]">
                 {lastInteraction ? (
                   <div
-                    className="flex items-center gap-1.5 truncate"
+                    className="flex items-center gap-1.5 truncate border-l-2 border-[#dc911b] bg-[#dc911b]/8 pl-2 py-1 rounded-r flex-1 min-w-0"
                     title={lastInteraction.summary}
                   >
                     <span className="flex items-center gap-1 shrink-0">
                       {getChannelIcon(lastInteraction.channel)}
-                      <span className="font-medium text-foreground/80">
+                      <span className="font-semibold text-foreground text-[10px]">
                         {getChannelLabel(lastInteraction.channel)}:
                       </span>
                     </span>
-                    <span className="truncate text-muted-foreground">
+                    <span className="truncate text-muted-foreground text-[10px]">
                       {formatDate(lastInteraction.interactionDate)}
                     </span>
                   </div>
                 ) : (
-                  <span className="text-muted-foreground/70 italic flex items-center gap-1">
+                  <span className="text-muted-foreground/70 italic flex items-center gap-1 text-[10px]">
                     <Clock className="size-3 shrink-0" />
                     Sem interação
                   </span>
@@ -161,7 +160,7 @@ export function KanbanCard({ project, index, onClick }: KanbanCardProps) {
 
                 {project.bidInvitationForecast && (
                   <span
-                    className="shrink-0 flex items-center gap-1 text-[10px] text-muted-foreground/80 bg-muted/40 px-1.5 py-0.5 rounded"
+                    className="shrink-0 flex items-center gap-1 text-[10px] text-muted-foreground/80 bg-muted/60 px-1.5 py-1 rounded font-medium"
                     title="Previsão de Carta Convite"
                   >
                     <Calendar className="size-2.5" />
@@ -176,4 +175,3 @@ export function KanbanCard({ project, index, onClick }: KanbanCardProps) {
     </Draggable>
   );
 }
-

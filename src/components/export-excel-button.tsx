@@ -55,7 +55,7 @@ export function ExportExcelButton({
       {downloading ? (
         <Loader2 className="size-3.5 animate-spin" />
       ) : (
-        <FileSpreadsheet className="size-3.5 text-emerald-600 dark:text-emerald-400" />
+        <FileSpreadsheet className="size-3.5 text-[#dc911b]" />
       )}
       <span>{downloading ? "Exportando..." : label}</span>
     </Button>

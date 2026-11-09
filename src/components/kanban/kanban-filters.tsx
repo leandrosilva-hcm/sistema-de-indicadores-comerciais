@@ -144,12 +144,12 @@ export function KanbanFilters({
             </span>
           </div>
 
-          <div className="flex items-center gap-1.5 bg-emerald-500/10 px-2.5 py-1 rounded-lg border border-emerald-500/20">
-            <DollarSign className="size-3.5 text-emerald-600 dark:text-emerald-400" />
-            <span className="text-xs text-emerald-700 dark:text-emerald-300 font-medium">
+          <div className="flex items-center gap-1.5 bg-[#dc911b]/12 px-2.5 py-1 rounded-lg border border-[#dc911b]/30">
+            <DollarSign className="size-3.5 text-[#dc911b]" />
+            <span className="text-xs text-[#9a600a] dark:text-[#f3b558] font-semibold">
               Pipeline:
             </span>
-            <span className="text-xs font-bold text-emerald-700 dark:text-emerald-300 tabular-nums">
+            <span className="text-xs font-bold text-foreground tabular-nums">
               {formatTotal(totalPipelineValue)}
             </span>
           </div>

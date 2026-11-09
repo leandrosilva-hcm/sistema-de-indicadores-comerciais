@@ -242,17 +242,17 @@ export function AgendaView({
           </p>
         </Card>
 
-        <Card className="p-4 bg-blue-500/5 border-blue-500/20 shadow-xs">
+        <Card className="p-4 bg-[#dc911b]/8 border-[#dc911b]/30 shadow-xs">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-blue-700 dark:text-blue-400">
+            <span className="text-xs font-semibold text-[#9a600a] dark:text-[#f3b558]">
               Ações a Executar
             </span>
-            <Clock className="size-4 text-blue-600" />
+            <Clock className="size-4 text-[#dc911b]" />
           </div>
-          <div className="text-2xl font-bold text-blue-700 dark:text-blue-400 mt-1 tabular-nums">
+          <div className="text-2xl font-bold text-[#dc911b] mt-1 tabular-nums">
             {pendingWeek}
           </div>
-          <p className="text-[11px] text-blue-600/80 mt-0.5">
+          <p className="text-[11px] text-muted-foreground mt-0.5">
             Ações pendentes na semana corrente
           </p>
         </Card>

@@ -60,19 +60,19 @@ async function TimelineDataLoader() {
     switch (ch) {
       case "reuniao_presencial":
         return (
-          <Badge className="bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-300 gap-1 text-xs">
+          <Badge className="bg-[#dc911b] text-black border-[#c47d12] font-semibold gap-1 text-xs">
             <Users className="size-3" /> Reunião Presencial / Café
           </Badge>
         );
       case "reuniao_online":
         return (
-          <Badge className="bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-300 gap-1 text-xs">
+          <Badge className="bg-slate-900 text-white border-slate-700 gap-1 text-xs">
             <Video className="size-3" /> Reunião Online
           </Badge>
         );
       case "ligacao":
         return (
-          <Badge className="bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-300 gap-1 text-xs">
+          <Badge className="bg-[#dc911b]/15 text-[#9a600a] dark:text-[#f3b558] border-[#dc911b]/30 gap-1 text-xs font-medium">
             <Phone className="size-3" /> Ligação Telefônica
           </Badge>
         );
@@ -130,7 +130,7 @@ async function TimelineDataLoader() {
             </div>
             <Link
               href="/kanban"
-              className="text-xs text-primary font-medium hover:underline flex items-center gap-1"
+              className="text-xs text-[#dc911b] font-semibold hover:underline flex items-center gap-1"
             >
               Ir ao Kanban <ArrowRight className="size-3" />
             </Link>
@@ -145,7 +145,7 @@ async function TimelineDataLoader() {
                 <div
                   className={`absolute -left-6 top-1.5 size-4 rounded-full border-2 border-background flex items-center justify-center ${
                     idx === 0
-                      ? "bg-primary ring-4 ring-primary/20"
+                      ? "bg-[#dc911b] ring-4 ring-[#dc911b]/25"
                       : "bg-muted-foreground/40"
                   }`}
                 />

@@ -5,8 +5,10 @@ import {
   getProjectDetails,
   createInteractionWithReaction,
   createClientContact,
+  updateProjectDetails,
+  deleteProject,
 } from "@/app/actions/projects";
-import { FilterUser, KANBAN_STAGES } from "@/types/kanban";
+import { FilterUser, FilterSegment, KANBAN_STAGES } from "@/types/kanban";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -30,6 +32,9 @@ import {
   UserCheck,
   CalendarCheck2,
   Sparkles,
+  Edit3,
+  Check,
+  Trash2,
 } from "lucide-react";
 
 interface ProjectDrawerProps {
@@ -37,7 +42,8 @@ interface ProjectDrawerProps {
   isOpen: boolean;
   onClose: () => void;
   users: FilterUser[];
-  onProjectUpdated?: () => void;
+  segments?: FilterSegment[];
+  onProjectUpdated?: (deletedProjectId?: string) => void;
 }
 
 export function ProjectDrawer({
@@ -45,6 +51,7 @@ export function ProjectDrawer({
   isOpen,
   onClose,
   users,
+  segments,
   onProjectUpdated,
 }: ProjectDrawerProps) {
   const [loading, setLoading] = useState(false);
@@ -70,6 +77,20 @@ export function ProjectDrawer({
   const [newContactDepartment, setNewContactDepartment] = useState("");
   const [newContactRole, setNewContactRole] = useState("");
 
+  // Edição de Metadados do Projeto
+  const [isEditingProject, setIsEditingProject] = useState(false);
+  const [editCompanyName, setEditCompanyName] = useState("");
+  const [editProjectName, setEditProjectName] = useState("");
+  const [editSegmentId, setEditSegmentId] = useState("");
+  const [editStage, setEditStage] = useState("");
+  const [editEstimatedValue, setEditEstimatedValue] = useState("");
+  const [editForecastDate, setEditForecastDate] = useState("");
+  const [editOwnerId, setEditOwnerId] = useState("");
+
+  // Confirmação de Exclusão do Projeto
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
   const [isPending, startTransition] = useTransition();
 
   // Carrega os detalhes completos do projeto
@@ -82,6 +103,17 @@ export function ProjectDrawer({
         setProjectData(res.project);
         setAuthorId(res.project.ownerId);
         setNextActionAssignedTo(res.project.ownerId);
+        setEditCompanyName(res.project.companyName);
+        setEditProjectName(res.project.projectName);
+        setEditSegmentId(res.project.segmentId || "");
+        setEditStage(res.project.stage);
+        setEditEstimatedValue(res.project.estimatedValue ? String(res.project.estimatedValue) : "");
+        setEditForecastDate(
+          res.project.bidInvitationForecast
+            ? new Date(res.project.bidInvitationForecast).toISOString().split("T")[0]
+            : ""
+        );
+        setEditOwnerId(res.project.ownerId);
       } else {
         setErrorMsg(res.error || "Erro ao carregar projeto.");
       }
@@ -100,10 +132,61 @@ export function ProjectDrawer({
       setNextActionTitle("");
       setNextActionDueDate("");
       setShowAddContact(false);
+      setIsEditingProject(false);
+      setShowDeleteConfirm(false);
+      setIsDeleting(false);
     } else {
       setProjectData(null);
     }
   }, [projectId, isOpen]);
+
+  // Salvar alterações de metadados do projeto
+  const handleSaveProjectDetails = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!projectId || !editProjectName.trim()) return;
+
+    startTransition(async () => {
+      const res = await updateProjectDetails({
+        projectId,
+        companyName: editCompanyName.trim(),
+        projectName: editProjectName.trim(),
+        segmentId: editSegmentId || null,
+        stage: editStage || undefined,
+        estimatedValue: editEstimatedValue ? Number(editEstimatedValue) : null,
+        bidInvitationForecast: editForecastDate || null,
+        ownerId: editOwnerId || undefined,
+      });
+
+      if (res.success) {
+        setIsEditingProject(false);
+        await loadProject(projectId);
+        onProjectUpdated?.();
+      } else {
+        alert(res.error || "Erro ao salvar alterações do projeto.");
+      }
+    });
+  };
+
+  // Excluir projeto com cascata
+  const handleDeleteProject = async () => {
+    if (!projectId) return;
+    setIsDeleting(true);
+    try {
+      const res = await deleteProject(projectId);
+      if (res.success) {
+        setShowDeleteConfirm(false);
+        setIsEditingProject(false);
+        onClose();
+        onProjectUpdated?.(projectId);
+      } else {
+        alert(res.error || "Erro ao excluir projeto.");
+      }
+    } catch {
+      alert("Erro ao conectar ao servidor.");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   // Submissão da nova interação com reação obrigatória (RN01)
   const handleSubmitInteraction = async (e: React.FormEvent) => {
@@ -276,35 +359,227 @@ export function ProjectDrawer({
               </Button>
             </div>
 
-            {/* Quick Metadata Bar */}
+            {/* Quick Metadata Bar / Edit Form */}
             {projectData && (
-              <div className="grid grid-cols-3 gap-2 mt-4 pt-3 border-t border-border/50 text-xs">
-                <div className="flex flex-col">
-                  <span className="text-muted-foreground text-[10px]">Valor Estimado:</span>
-                  <span className="font-semibold text-foreground flex items-center gap-1">
-                    <DollarSign className="size-3 text-emerald-600" />
-                    {formatCurrency(projectData.estimatedValue)}
-                  </span>
+              isEditingProject ? (
+                <form
+                  onSubmit={handleSaveProjectDetails}
+                  className="mt-4 pt-3 border-t border-border/50 space-y-3"
+                >
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                    <div>
+                      <label className="text-[10px] text-muted-foreground font-semibold">
+                        Empresa Contratante *
+                      </label>
+                      <Input
+                        value={editCompanyName}
+                        onChange={(e) => setEditCompanyName(e.target.value)}
+                        required
+                        className="h-8 text-xs bg-background"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[10px] text-muted-foreground font-semibold">
+                        Nome da Obra / Projeto *
+                      </label>
+                      <Input
+                        value={editProjectName}
+                        onChange={(e) => setEditProjectName(e.target.value)}
+                        required
+                        className="h-8 text-xs bg-background"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[10px] text-muted-foreground font-semibold">
+                        Segmento de Mercado
+                      </label>
+                      <select
+                        value={editSegmentId}
+                        onChange={(e) => setEditSegmentId(e.target.value)}
+                        className="w-full h-8 rounded-lg border border-input bg-background px-3 py-1 text-xs text-foreground shadow-xs cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      >
+                        <option value="">Geral / Sem Segmento</option>
+                        {segments?.map((s) => (
+                          <option key={s.id} value={s.id}>
+                            {s.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="text-[10px] text-muted-foreground font-semibold">
+                        Estágio no Funil
+                      </label>
+                      <select
+                        value={editStage}
+                        onChange={(e) => setEditStage(e.target.value)}
+                        className="w-full h-8 rounded-lg border border-input bg-background px-3 py-1 text-xs text-foreground shadow-xs cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      >
+                        {KANBAN_STAGES.map((s) => (
+                          <option key={s.id} value={s.id}>
+                            {s.title}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="text-[10px] text-muted-foreground font-semibold">
+                        Valor Estimado (R$)
+                      </label>
+                      <Input
+                        type="number"
+                        step="any"
+                        placeholder="Ex: 50000000"
+                        value={editEstimatedValue}
+                        onChange={(e) => setEditEstimatedValue(e.target.value)}
+                        className="h-8 text-xs bg-background"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[10px] text-muted-foreground font-semibold">
+                        Previsão Carta Convite
+                      </label>
+                      <Input
+                        type="date"
+                        value={editForecastDate}
+                        onChange={(e) => setEditForecastDate(e.target.value)}
+                        className="h-8 text-xs bg-background"
+                      />
+                    </div>
+                    <div className="sm:col-span-2">
+                      <label className="text-[10px] text-muted-foreground font-semibold">
+                        Responsável Comercial
+                      </label>
+                      <select
+                        value={editOwnerId}
+                        onChange={(e) => setEditOwnerId(e.target.value)}
+                        className="w-full h-8 rounded-lg border border-input bg-background px-3 py-1 text-xs text-foreground shadow-xs cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      >
+                        {users.map((u) => (
+                          <option key={u.id} value={u.id}>
+                            {u.name} ({u.role})
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-end gap-2 pt-1">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="xs"
+                      onClick={() => setIsEditingProject(false)}
+                      className="text-xs"
+                    >
+                      Cancelar
+                    </Button>
+                    <Button
+                      type="submit"
+                      size="xs"
+                      disabled={isPending}
+                      className="gap-1 text-xs font-semibold"
+                    >
+                      <Check className="size-3" />
+                      {isPending ? "Salvando..." : "Salvar Alterações"}
+                    </Button>
+                  </div>
+                </form>
+              ) : (
+                <div className="mt-4 pt-3 border-t border-border/50 text-xs space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+                      Informações da Oportunidade
+                    </span>
+                    <div className="flex items-center gap-1.5">
+                      <Button
+                        variant="outline"
+                        size="xs"
+                        onClick={() => setIsEditingProject(true)}
+                        className="gap-1 text-[11px] text-foreground h-6 px-2.5 font-medium cursor-pointer"
+                      >
+                        <Edit3 className="size-3 text-[#dc911b]" />
+                        Editar Projeto
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="xs"
+                        onClick={() => setShowDeleteConfirm(true)}
+                        className="gap-1 text-[11px] text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/30 h-6 px-2 cursor-pointer"
+                        title="Excluir este projeto"
+                      >
+                        <Trash2 className="size-3 text-red-500" />
+                        Excluir
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Confirmação de Exclusão */}
+                  {showDeleteConfirm && (
+                    <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-xs space-y-2 animate-in fade-in duration-150">
+                      <div className="flex items-start gap-2">
+                        <AlertCircle className="size-4 text-red-600 shrink-0 mt-0.5" />
+                        <div>
+                          <p className="font-semibold text-red-700 dark:text-red-400">
+                            Confirmar exclusão de "{projectData.projectName}"?
+                          </p>
+                          <p className="text-[11px] text-red-600/90 mt-0.5 leading-relaxed">
+                            Esta ação removerá permanentemente o projeto, seus contatos e todo o histórico de interações. Esta operação não pode ser desfeita.
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-end gap-2 pt-1">
+                        <Button
+                          variant="ghost"
+                          size="xs"
+                          onClick={() => setShowDeleteConfirm(false)}
+                          disabled={isDeleting}
+                          className="text-xs"
+                        >
+                          Cancelar
+                        </Button>
+                        <Button
+                          variant="destructive"
+                          size="xs"
+                          onClick={handleDeleteProject}
+                          disabled={isDeleting}
+                          className="gap-1 text-xs font-semibold bg-red-600 hover:bg-red-700 text-white"
+                        >
+                          <Trash2 className="size-3" />
+                          {isDeleting ? "Excluindo..." : "Sim, Excluir Definitivamente"}
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="grid grid-cols-3 gap-2">
+                    <div className="flex flex-col">
+                      <span className="text-muted-foreground text-[10px]">Valor Estimado:</span>
+                      <span className="font-semibold text-foreground flex items-center gap-1">
+                        <DollarSign className="size-3 text-[#dc911b]" />
+                        {formatCurrency(projectData.estimatedValue)}
+                      </span>
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-muted-foreground text-[10px]">Responsável:</span>
+                      <span className="font-semibold text-foreground flex items-center gap-1">
+                        <User className="size-3 text-muted-foreground" />
+                        {projectData.owner.name}
+                      </span>
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-muted-foreground text-[10px]">Previsão Edital/Carta:</span>
+                      <span className="font-semibold text-foreground flex items-center gap-1">
+                        <Calendar className="size-3 text-[#c47d12]" />
+                        {projectData.bidInvitationForecast
+                          ? new Intl.DateTimeFormat("pt-BR").format(
+                              new Date(projectData.bidInvitationForecast)
+                            )
+                          : "A definir"}
+                      </span>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex flex-col">
-                  <span className="text-muted-foreground text-[10px]">Responsável:</span>
-                  <span className="font-semibold text-foreground flex items-center gap-1">
-                    <User className="size-3 text-primary" />
-                    {projectData.owner.name}
-                  </span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-muted-foreground text-[10px]">Previsão Edital/Carta:</span>
-                  <span className="font-semibold text-foreground flex items-center gap-1">
-                    <Calendar className="size-3 text-amber-600" />
-                    {projectData.bidInvitationForecast
-                      ? new Intl.DateTimeFormat("pt-BR").format(
-                          new Date(projectData.bidInvitationForecast)
-                        )
-                      : "A definir"}
-                  </span>
-                </div>
-              </div>
+              )
             )}
           </div>
 

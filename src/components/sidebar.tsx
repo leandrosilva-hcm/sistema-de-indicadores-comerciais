@@ -62,12 +62,12 @@ export function Sidebar() {
     >
       {/* Header com Logotipo Oficial da HCM Engenharia */}
       <div className="flex h-16 items-center gap-3 border-b border-zinc-800/80 px-4 bg-black">
-        <div className="relative size-9 shrink-0 flex items-center justify-center rounded-md bg-zinc-900/60 p-1 border border-zinc-800">
+        <div className="relative size-10 shrink-0 flex items-center justify-center rounded-lg bg-zinc-900/60 p-1 border border-zinc-800">
           <Image
-            src="/hcm-logo.png"
+            src="/HCM-Engenharia-Branca.png"
             alt="HCM Engenharia"
-            width={32}
-            height={32}
+            width={36}
+            height={36}
             className="object-contain"
             priority
           />

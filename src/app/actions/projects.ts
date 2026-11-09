@@ -271,3 +271,89 @@ export async function createProject(data: CreateProjectInput) {
     return { success: false, error: "Falha ao criar o projeto no banco." };
   }
 }
+
+export type UpdateProjectInput = {
+  projectId: string;
+  companyName?: string;
+  projectName?: string;
+  segmentId?: string | null;
+  ownerId?: string;
+  stage?: string;
+  estimatedValue?: number | null;
+  bidInvitationForecast?: string | null;
+};
+
+export async function updateProjectDetails(data: UpdateProjectInput) {
+  try {
+    if (!data.projectId) {
+      return { success: false, error: "ID do projeto é obrigatório." };
+    }
+
+    const updated = await prisma.project.update({
+      where: { id: data.projectId },
+      data: {
+        ...(data.companyName?.trim() && { companyName: data.companyName.trim() }),
+        ...(data.projectName?.trim() && { projectName: data.projectName.trim() }),
+        ...(data.segmentId !== undefined && { segmentId: data.segmentId }),
+        ...(data.ownerId && { ownerId: data.ownerId }),
+        ...(data.stage && { stage: data.stage }),
+        ...(data.estimatedValue !== undefined && {
+          estimatedValue: data.estimatedValue !== null ? Number(data.estimatedValue) : null,
+        }),
+        ...(data.bidInvitationForecast !== undefined && {
+          bidInvitationForecast: data.bidInvitationForecast
+            ? new Date(data.bidInvitationForecast)
+            : null,
+        }),
+        updatedAt: new Date(),
+      },
+    });
+
+    try {
+      revalidatePath("/kanban");
+      revalidatePath("/dashboard");
+      revalidatePath("/agenda");
+      revalidatePath("/timeline");
+    } catch {
+      // guard
+    }
+
+    return { success: true, project: updated };
+  } catch (error) {
+    console.error("Erro ao atualizar dados do projeto:", error);
+    return { success: false, error: "Falha ao atualizar dados do projeto." };
+  }
+}
+
+export async function deleteProject(projectId: string) {
+  try {
+    if (!projectId) {
+      return { success: false, error: "ID do projeto é obrigatório." };
+    }
+
+    await prisma.$transaction(async (tx) => {
+      // Exclui tarefas vinculadas ao projeto
+      await tx.taskSchedule.deleteMany({ where: { projectId } });
+      // Exclui interações registradas no projeto
+      await tx.interactionLog.deleteMany({ where: { projectId } });
+      // Exclui contatos/decisores do projeto
+      await tx.clientContact.deleteMany({ where: { projectId } });
+      // Exclui o projeto
+      await tx.project.delete({ where: { id: projectId } });
+    });
+
+    try {
+      revalidatePath("/kanban");
+      revalidatePath("/dashboard");
+      revalidatePath("/agenda");
+      revalidatePath("/timeline");
+    } catch {
+      // guard
+    }
+
+    return { success: true };
+  } catch (error) {
+    console.error("Erro ao excluir projeto:", error);
+    return { success: false, error: "Falha ao excluir o projeto." };
+  }
+}

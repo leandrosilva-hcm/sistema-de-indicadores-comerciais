@@ -148,7 +148,10 @@ export function KanbanBoard({
     setIsDrawerOpen(true);
   };
 
-  const handleProjectUpdated = () => {
+  const handleProjectUpdated = (deletedProjectId?: string) => {
+    if (deletedProjectId) {
+      setProjects((prev) => prev.filter((p) => p.id !== deletedProjectId));
+    }
     router.refresh();
   };
 
@@ -208,6 +211,7 @@ export function KanbanBoard({
         isOpen={isDrawerOpen}
         onClose={() => setIsDrawerOpen(false)}
         users={users}
+        segments={segments}
         onProjectUpdated={handleProjectUpdated}
       />
 

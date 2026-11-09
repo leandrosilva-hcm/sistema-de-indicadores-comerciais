@@ -122,7 +122,7 @@ async function TimelineDataLoader() {
             <div>
               <CardTitle className="text-base font-bold flex items-center gap-2">
                 <Clock className="size-4 text-primary" />
-                Linha do Tempo Cronológica (Imutável — RN02)
+                Linha do Tempo Cronológica
               </CardTitle>
               <p className="text-xs text-muted-foreground mt-1">
                 Histórico cumulativo completo de abordagens comerciais, reuniões e alinhamentos técnicos com decisores.

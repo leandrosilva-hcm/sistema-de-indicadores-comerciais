@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useEffect, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import {
   createSegment,
@@ -54,6 +54,11 @@ export function SegmentsView({ initialSegments }: SegmentsViewProps) {
   const router = useRouter();
   const [segments, setSegments] = useState<SegmentItem[]>(initialSegments);
 
+  // Sincroniza estado com initialSegments quando o servidor revalidar
+  useEffect(() => {
+    setSegments(initialSegments);
+  }, [initialSegments]);
+
   // Modal Novo / Editar
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingSegment, setEditingSegment] = useState<SegmentItem | null>(null);
@@ -102,7 +107,14 @@ export function SegmentsView({ initialSegments }: SegmentsViewProps) {
     startTransition(async () => {
       if (editingSegment) {
         const res = await updateSegment(editingSegment.id, segmentName, segmentActive);
-        if (res.success) {
+        if (res.success && res.segment) {
+          setSegments((prev) =>
+            prev.map((s) =>
+              s.id === editingSegment.id
+                ? { ...s, name: res.segment.name, active: res.segment.active }
+                : s
+            )
+          );
           setIsModalOpen(false);
           router.refresh();
         } else {
@@ -110,7 +122,16 @@ export function SegmentsView({ initialSegments }: SegmentsViewProps) {
         }
       } else {
         const res = await createSegment(segmentName);
-        if (res.success) {
+        if (res.success && res.segment) {
+          const newSegment: SegmentItem = {
+            id: res.segment.id,
+            name: res.segment.name,
+            active: res.segment.active,
+            _count: { projects: 0 },
+          };
+          setSegments((prev) =>
+            [...prev, newSegment].sort((a, b) => a.name.localeCompare(b.name, "pt-BR"))
+          );
           setIsModalOpen(false);
           router.refresh();
         } else {
@@ -127,7 +148,7 @@ export function SegmentsView({ initialSegments }: SegmentsViewProps) {
         <div>
           <h2 className="text-base font-bold text-foreground flex items-center gap-2">
             <Layers className="size-4 text-primary" />
-            Parametrização de Segmentos de Mercado (RF10)
+            Parametrização de Segmentos de Mercado
           </h2>
           <p className="text-xs text-muted-foreground mt-0.5">
             Gerencie os nichos de atuação da engenharia civil e industrial para categorização dos projetos.

@@ -1,0 +1,104 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  role      String   @default("comercial") // 'diretor', 'comercial', 'operacoes'
+  createdAt DateTime @default(now()) @map("created_at")
+
+  ownedProjects Project[]        @relation("ProjectOwner")
+  interactions  InteractionLog[] @relation("InteractionAuthor")
+  assignedTasks TaskSchedule[]   @relation("TaskAssignee")
+
+  @@map("users")
+}
+
+model MarketSegment {
+  id       String    @id @default(uuid())
+  name     String    @unique
+  active   Boolean   @default(true)
+  projects Project[]
+
+  @@map("market_segments")
+}
+
+model Project {
+  id                    String    @id @default(uuid())
+  companyName           String    @map("company_name")
+  projectName           String    @map("project_name")
+  segmentId             String?   @map("segment_id")
+  ownerId               String    @map("owner_id")
+  stage                 String    @default("mapeamento_inicial") // 'mapeamento_inicial', 'contato_engenharia', 'em_homologacao', 'aguardando_carta', 'proposta_apresentada', 'fechado_declinado'
+  estimatedValue        Float?    @map("estimated_value")
+  bidInvitationForecast DateTime? @map("bid_invitation_forecast")
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @default(now()) @updatedAt @map("updated_at")
+
+  segment      MarketSegment?   @relation(fields: [segmentId], references: [id], onDelete: SetNull)
+  owner        User             @relation("ProjectOwner", fields: [ownerId], references: [id])
+  contacts     ClientContact[]
+  interactions InteractionLog[]
+  tasks        TaskSchedule[]
+
+  @@map("projects")
+}
+
+model ClientContact {
+  id           String   @id @default(uuid())
+  projectId    String   @map("project_id")
+  name         String
+  email        String?
+  phone        String?
+  department   String?
+  decisionRole String?  @map("decision_role")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  project      Project          @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  interactions InteractionLog[]
+
+  @@map("client_contacts")
+}
+
+model InteractionLog {
+  id              String   @id @default(uuid())
+  projectId       String   @map("project_id")
+  authorId        String   @map("author_id")
+  contactId       String?  @map("contact_id")
+  channel         String   // 'ligacao', 'reuniao_online', 'reuniao_presencial'
+  summary         String
+  interactionDate DateTime @default(now()) @map("interaction_date")
+
+  project Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  author  User            @relation("InteractionAuthor", fields: [authorId], references: [id])
+  contact ClientContact?  @relation(fields: [contactId], references: [id], onDelete: SetNull)
+  tasks   TaskSchedule[]
+
+  @@map("interaction_logs")
+}
+
+model TaskSchedule {
+  id            String    @id @default(uuid())
+  projectId     String    @map("project_id")
+  assignedTo    String    @map("assigned_to")
+  interactionId String?   @map("interaction_id")
+  title         String
+  dueDate       DateTime  @map("due_date")
+  completed     Boolean   @default(false)
+  completedAt   DateTime? @map("completed_at")
+  createdAt     DateTime  @default(now()) @map("created_at")
+
+  project      Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  assignedUser User            @relation("TaskAssignee", fields: [assignedTo], references: [id])
+  interaction  InteractionLog? @relation(fields: [interactionId], references: [id], onDelete: SetNull)
+
+  @@map("tasks_schedule")
+}
+

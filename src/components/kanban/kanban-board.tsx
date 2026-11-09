@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { DragDropContext, DropResult } from "@hello-pangea/dnd";
 import {
   KANBAN_STAGES,
@@ -10,6 +11,7 @@ import {
 } from "@/types/kanban";
 import { KanbanColumn } from "./kanban-column";
 import { KanbanFilters } from "./kanban-filters";
+import { ProjectDrawer } from "./project-drawer";
 import { updateProjectStage } from "@/app/actions/projects";
 
 interface KanbanBoardProps {
@@ -23,12 +25,17 @@ export function KanbanBoard({
   users,
   segments,
 }: KanbanBoardProps) {
+  const router = useRouter();
   const [projects, setProjects] = useState<KanbanProject[]>(initialProjects);
   const [selectedUser, setSelectedUser] = useState<string>("");
   const [selectedSegment, setSelectedSegment] = useState<string>("");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [isMounted, setIsMounted] = useState(false);
   const [isPending, startTransition] = useTransition();
+
+  // Drawer lateral interativo (Etapa 4)
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   // Prevent SSR hydration mismatch for drag-and-drop
   useEffect(() => {
@@ -134,6 +141,15 @@ export function KanbanBoard({
     }
   };
 
+  const handleCardClick = (project: KanbanProject) => {
+    setSelectedProjectId(project.id);
+    setIsDrawerOpen(true);
+  };
+
+  const handleProjectUpdated = () => {
+    router.refresh();
+  };
+
   const handleResetFilters = () => {
     setSelectedUser("");
     setSelectedSegment("");
@@ -184,11 +200,20 @@ export function KanbanBoard({
               key={stage.id}
               stage={stage}
               projects={projectsByStage[stage.id] || []}
+              onCardClick={handleCardClick}
             />
           ))}
         </div>
       </DragDropContext>
+
+      {/* Drawer Lateral Interativo (RF03, RF04, RN01, RN02) */}
+      <ProjectDrawer
+        projectId={selectedProjectId}
+        isOpen={isDrawerOpen}
+        onClose={() => setIsDrawerOpen(false)}
+        users={users}
+        onProjectUpdated={handleProjectUpdated}
+      />
     </div>
   );
 }
-

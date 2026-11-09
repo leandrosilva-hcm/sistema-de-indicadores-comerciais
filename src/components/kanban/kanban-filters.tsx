@@ -4,6 +4,7 @@ import { FilterUser, FilterSegment } from "@/types/kanban";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { ExportExcelButton } from "@/components/export-excel-button";
 import { Search, Filter, RotateCcw, User, Layers, DollarSign } from "lucide-react";
 
 interface KanbanFiltersProps {
@@ -118,9 +119,11 @@ export function KanbanFilters({
           )}
         </div>
 
-        {/* Right side: Pipeline Totals */}
-        <div className="flex items-center gap-3 shrink-0">
-          <div className="flex items-center gap-1.5 bg-muted/50 px-3 py-1.5 rounded-lg border border-border/60">
+        {/* Right side: Pipeline Totals & Export */}
+        <div className="flex items-center gap-2.5 shrink-0">
+          <ExportExcelButton size="xs" />
+
+          <div className="flex items-center gap-1.5 bg-muted/50 px-2.5 py-1 rounded-lg border border-border/60">
             <Layers className="size-3.5 text-muted-foreground" />
             <span className="text-xs text-muted-foreground font-medium">Projetos:</span>
             <span className="text-xs font-bold text-foreground">
@@ -128,10 +131,10 @@ export function KanbanFilters({
             </span>
           </div>
 
-          <div className="flex items-center gap-1.5 bg-emerald-500/10 px-3 py-1.5 rounded-lg border border-emerald-500/20">
+          <div className="flex items-center gap-1.5 bg-emerald-500/10 px-2.5 py-1 rounded-lg border border-emerald-500/20">
             <DollarSign className="size-3.5 text-emerald-600 dark:text-emerald-400" />
             <span className="text-xs text-emerald-700 dark:text-emerald-300 font-medium">
-              Pipeline Total:
+              Pipeline:
             </span>
             <span className="text-xs font-bold text-emerald-700 dark:text-emerald-300 tabular-nums">
               {formatTotal(totalPipelineValue)}

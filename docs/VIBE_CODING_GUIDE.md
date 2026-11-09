@@ -65,7 +65,7 @@ Copie e cole os prompts abaixo em sequência no Antigravity, aguardando a conclu
 
 ---
 
-### Etapa 5: Agenda Semanal (Planejado vs. Executado - RF06, PB07)
+### Etapa 5: Agenda Semanal (Planejado vs. Executado - RF06, PB07) <---
 > **Prompt 5:**
 > "Implemente a página de Agenda Semanal em `/agenda`.
 > Requisitos:

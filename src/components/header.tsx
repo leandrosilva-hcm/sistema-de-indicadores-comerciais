@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
+import { ExportExcelButton } from "@/components/export-excel-button";
 
 const pageTitles: Record<string, { title: string; description: string }> = {
   "/kanban": {
@@ -37,7 +38,8 @@ export function Header() {
           <p className="text-xs text-muted-foreground">{page.description}</p>
         </div>
       </div>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-3">
+        <ExportExcelButton />
         <Badge variant="outline" className="text-xs">
           v1.0
         </Badge>

@@ -4,7 +4,6 @@ import { FilterUser, FilterSegment } from "@/types/kanban";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ExportExcelButton } from "@/components/export-excel-button";
 import { Search, Filter, RotateCcw, User, Layers, DollarSign, Plus } from "lucide-react";
 
 interface KanbanFiltersProps {
@@ -121,7 +120,7 @@ export function KanbanFilters({
           )}
         </div>
 
-        {/* Right side: Pipeline Totals, Export & New Project */}
+        {/* Right side: Pipeline Totals & New Project */}
         <div className="flex items-center gap-2 shrink-0">
           {onNewProjectClick && (
             <Button
@@ -133,8 +132,6 @@ export function KanbanFilters({
               Novo Projeto
             </Button>
           )}
-
-          <ExportExcelButton size="xs" />
 
           <div className="flex items-center gap-1.5 bg-muted/50 px-2.5 py-1 rounded-lg border border-border/60">
             <Layers className="size-3.5 text-muted-foreground" />

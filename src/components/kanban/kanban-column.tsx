@@ -37,10 +37,10 @@ export function KanbanColumn({
   };
 
   return (
-    <div className="flex w-80 shrink-0 flex-col rounded-xl border border-border/80 bg-muted/40 shadow-xs">
+    <div className="flex w-80 shrink-0 flex-col rounded-xl border border-border/80 bg-slate-100/70 dark:bg-zinc-900/50 shadow-xs h-fit min-h-[550px] transition-all duration-200">
       {/* Column Header */}
       <div
-        className={`flex flex-col gap-1.5 border-b border-border/70 p-3.5 border-t-4 rounded-t-xl ${stage.color} bg-background/50 backdrop-blur-xs`}
+        className={`flex flex-col gap-1.5 border-b border-border/70 p-3.5 border-t-4 rounded-t-xl ${stage.color} bg-background/90 backdrop-blur-xs sticky top-0 z-10`}
       >
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2 min-w-0">
@@ -78,9 +78,9 @@ export function KanbanColumn({
           <div
             ref={provided.innerRef}
             {...provided.droppableProps}
-            className={`flex flex-1 flex-col gap-3 p-3 min-h-[500px] transition-colors duration-200 ${
+            className={`flex flex-1 flex-col gap-3 p-3 min-h-[460px] transition-colors duration-200 ${
               snapshot.isDraggingOver
-                ? "bg-primary/5 ring-2 ring-primary/20 ring-inset rounded-b-xl"
+                ? "bg-[#dc911b]/10 ring-2 ring-[#dc911b]/30 ring-inset rounded-b-xl"
                 : ""
             }`}
           >

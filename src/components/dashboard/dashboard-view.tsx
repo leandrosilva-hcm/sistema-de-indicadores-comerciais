@@ -18,7 +18,6 @@ import { FilterUser, FilterSegment, KANBAN_STAGES } from "@/types/kanban";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ExportExcelButton } from "@/components/export-excel-button";
 import {
   Building2,
   TrendingUp,
@@ -327,7 +326,6 @@ export function DashboardView({
         </div>
 
         <div className="flex items-center gap-2.5">
-          <ExportExcelButton />
           <Badge variant="outline" className="text-xs py-1 px-3">
             Visão Executiva
           </Badge>

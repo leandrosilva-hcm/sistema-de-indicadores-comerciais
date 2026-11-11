@@ -78,7 +78,7 @@ function KanbanSkeleton() {
 
 export default function KanbanPage() {
   return (
-    <div className="h-full flex flex-col">
+    <div className="min-h-full flex flex-col">
       <Suspense fallback={<KanbanSkeleton />}>
         <KanbanDataLoader />
       </Suspense>

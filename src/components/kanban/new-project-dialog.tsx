@@ -93,7 +93,7 @@ export function NewProjectDialog({
           <div className="flex items-center gap-2">
             <Sparkles className="size-5 text-primary" />
             <DialogTitle className="text-base font-bold text-foreground">
-              Cadastrar Nova Oportunidade / Obra (RF01)
+              Cadastrar Nova Oportunidade / Obra
             </DialogTitle>
           </div>
           <DialogDescription className="text-xs text-muted-foreground mt-0.5">

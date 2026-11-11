@@ -13,7 +13,7 @@ interface ExportExcelButtonProps {
 
 export function ExportExcelButton({
   variant = "outline",
-  size = "sm",
+  size = "default",
   className = "",
   label = "Exportar Dados (.xlsx)",
 }: ExportExcelButtonProps) {
@@ -49,13 +49,13 @@ export function ExportExcelButton({
       size={size}
       onClick={handleExport}
       disabled={downloading}
-      className={`gap-1.5 font-medium cursor-pointer ${className}`}
+      className={`gap-2 font-semibold cursor-pointer text-xs sm:text-sm hover:border-[#107c41]/60 hover:bg-[#107c41]/5 transition-all ${className}`}
       title="Exportar base completa para planilha Excel (.xlsx com 3 abas)"
     >
       {downloading ? (
-        <Loader2 className="size-3.5 animate-spin" />
+        <Loader2 className="size-4 animate-spin text-[#107c41]" />
       ) : (
-        <FileSpreadsheet className="size-3.5 text-[#dc911b]" />
+        <FileSpreadsheet className="size-4 text-[#107c41] dark:text-[#22c55e]" />
       )}
       <span>{downloading ? "Exportando..." : label}</span>
     </Button>

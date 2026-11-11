@@ -8,7 +8,7 @@ import {
   Kanban,
   Clock,
   CalendarDays,
-  Layers,
+  Settings2,
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
@@ -21,31 +21,26 @@ const navItems = [
     label: "Kanban",
     href: "/kanban",
     icon: Kanban,
-    description: "Quadro de oportunidades",
   },
   {
     label: "Linha do Tempo",
     href: "/timeline",
     icon: Clock,
-    description: "Histórico de interações",
   },
   {
     label: "Agenda Semanal",
     href: "/agenda",
     icon: CalendarDays,
-    description: "Planejado vs. Executado",
   },
   {
     label: "Dashboard",
     href: "/dashboard",
     icon: LayoutDashboard,
-    description: "Indicadores gerenciais",
   },
   {
-    label: "Segmentos",
+    label: "Configurações",
     href: "/segmentos",
-    icon: Layers,
-    description: "Parametrização de mercado",
+    icon: Settings2,
   },
 ];
 
@@ -96,7 +91,7 @@ export function Sidebar() {
               key={item.href}
               href={item.href}
               className={cn(
-                "group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-all duration-150",
+                "group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-150",
                 isActive
                   ? "bg-[#dc911b] text-black font-semibold shadow-xs"
                   : "text-zinc-400 hover:bg-zinc-900/90 hover:text-white",
@@ -113,19 +108,7 @@ export function Sidebar() {
                 )}
               />
               {!collapsed && (
-                <div className="flex flex-col overflow-hidden">
-                  <span className="truncate leading-tight">{item.label}</span>
-                  <span
-                    className={cn(
-                      "truncate text-[11px] font-normal transition-colors",
-                      isActive
-                        ? "text-black/80 font-medium"
-                        : "text-zinc-500 group-hover:text-zinc-400"
-                    )}
-                  >
-                    {item.description}
-                  </span>
-                </div>
+                <span className="truncate leading-tight font-medium">{item.label}</span>
               )}
             </Link>
           );

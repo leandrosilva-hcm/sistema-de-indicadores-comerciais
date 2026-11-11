@@ -3,16 +3,30 @@ import { prisma } from "@/lib/prisma";
 import { SegmentsView } from "@/components/segments/segments-view";
 
 async function SegmentsDataLoader() {
-  const segments = await prisma.marketSegment.findMany({
-    orderBy: { name: "asc" },
-    include: {
-      _count: {
-        select: { projects: true },
+  const [segments, users] = await Promise.all([
+    prisma.marketSegment.findMany({
+      orderBy: { name: "asc" },
+      include: {
+        _count: {
+          select: { projects: true },
+        },
       },
-    },
-  });
+    }),
+    prisma.user.findMany({
+      orderBy: { name: "asc" },
+      include: {
+        _count: {
+          select: {
+            ownedProjects: true,
+            interactions: true,
+            assignedTasks: true,
+          },
+        },
+      },
+    }),
+  ]);
 
-  return <SegmentsView initialSegments={segments} />;
+  return <SegmentsView initialSegments={segments} initialUsers={users} />;
 }
 
 function SegmentsSkeleton() {

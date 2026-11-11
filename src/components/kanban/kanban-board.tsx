@@ -162,7 +162,7 @@ export function KanbanBoard({
   };
 
   return (
-    <div className="flex flex-col gap-5 h-full">
+    <div className="flex flex-col gap-5 min-h-full">
       {/* Top Controls & Filters */}
       <KanbanFilters
         users={users}
@@ -183,7 +183,7 @@ export function KanbanBoard({
       {/* Drag & Drop Board */}
       {isMounted ? (
         <DragDropContext onDragEnd={handleDragEnd}>
-          <div className="flex flex-1 gap-4 overflow-x-auto pb-6 pt-1 select-none">
+          <div className="flex flex-1 gap-4 overflow-x-auto pb-8 pt-1 select-none items-start">
             {KANBAN_STAGES.map((stage) => (
               <KanbanColumn
                 key={stage.id}
@@ -195,7 +195,7 @@ export function KanbanBoard({
           </div>
         </DragDropContext>
       ) : (
-        <div className="flex gap-4 overflow-x-auto pb-6 pt-1">
+        <div className="flex gap-4 overflow-x-auto pb-8 pt-1 items-start">
           {KANBAN_STAGES.map((s) => (
             <div
               key={s.id}

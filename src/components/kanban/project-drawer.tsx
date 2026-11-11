@@ -756,7 +756,7 @@ export function ProjectDrawer({
                       <div className="flex items-center gap-1.5">
                         <Sparkles className="size-4 text-[#dc911b]" />
                         <CardTitle className="text-xs uppercase tracking-wider font-bold text-[#dc911b]">
-                          Última Tratativa Realizada (RN02)
+                          Última Tratativa Realizada
                         </CardTitle>
                       </div>
                       {lastInteraction && getChannelBadge(lastInteraction.channel)}
@@ -825,7 +825,7 @@ export function ProjectDrawer({
                       Registrar Nova Tratativa Comercial
                     </h3>
                     <p className="text-xs text-muted-foreground mt-0.5">
-                      Relate o contato realizado com o cliente e obrigatoriamente agende o próximo passo (RN01).
+                      Relate o contato realizado com o cliente e obrigatoriamente agende o próximo passo.
                     </p>
                   </div>
 
@@ -834,7 +834,7 @@ export function ProjectDrawer({
                     <AlertCircle className="size-4 shrink-0 mt-0.5 text-amber-600 dark:text-amber-400" />
                     <div>
                       <strong className="font-semibold block">
-                        Regra RN01 — Princípio da Ação e Reação:
+                        Regra — Princípio da Ação e Reação:
                       </strong>
                       <span>
                         Nenhum registro pode ser salvo sem o agendamento obrigatório de uma próxima ação futura com data de retorno.
@@ -915,7 +915,7 @@ export function ProjectDrawer({
                     <div className="p-3.5 rounded-lg border-2 border-primary/20 bg-primary/5 space-y-3">
                       <div className="flex items-center gap-1.5 text-xs font-bold text-primary">
                         <CalendarCheck2 className="size-4" />
-                        <span>Próxima Ação Agendada (Gatilho Obrigatório — RN01)</span>
+                        <span>Próxima Ação Agendada</span>
                       </div>
 
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

@@ -12,7 +12,14 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { Plus, Building2, Briefcase, DollarSign, Calendar, User, Sparkles } from "lucide-react";
+import {
+  maskCurrency,
+  formatCurrencyOnBlur,
+  parseCurrencyToNumber,
+  maskPhone,
+  isValidEmail,
+} from "@/lib/masks";
+import { Plus, Building2, Briefcase, DollarSign, Calendar, User, Sparkles, AlertCircle } from "lucide-react";
 
 interface NewProjectDialogProps {
   isOpen: boolean;
@@ -42,16 +49,33 @@ export function NewProjectDialog({
   const [initialContactRole, setInitialContactRole] = useState("");
   const [initialContactPhone, setInitialContactPhone] = useState("");
   const [initialContactEmail, setInitialContactEmail] = useState("");
+  const [emailError, setEmailError] = useState<string | null>(null);
 
   const [isPending, startTransition] = useTransition();
 
+  const handleClose = () => {
+    setEmailError(null);
+    onClose();
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setEmailError(null);
 
     if (!companyName.trim() || !projectName.trim()) {
       alert("Por favor, preencha o nome da empresa e o nome do projeto.");
       return;
     }
+
+    // Validação estrita do formato de e-mail (caso informado)
+    if (initialContactEmail.trim()) {
+      if (!isValidEmail(initialContactEmail)) {
+        setEmailError("O e-mail deve conter '@' e um formato válido (ex: contato@empresa.com.br).");
+        return;
+      }
+    }
+
+    const numericEstimatedValue = parseCurrencyToNumber(estimatedValue);
 
     startTransition(async () => {
       const res = await createProject({
@@ -60,12 +84,12 @@ export function NewProjectDialog({
         segmentId: segmentId || null,
         ownerId: ownerId || users[0]?.id,
         stage,
-        estimatedValue: estimatedValue ? parseFloat(estimatedValue) : null,
+        estimatedValue: numericEstimatedValue,
         bidInvitationForecast: bidInvitationForecast || null,
         initialContactName: initialContactName || null,
         initialContactRole: initialContactRole || null,
         initialContactPhone: initialContactPhone || null,
-        initialContactEmail: initialContactEmail || null,
+        initialContactEmail: initialContactEmail ? initialContactEmail.trim().toLowerCase() : null,
       });
 
       if (res.success) {
@@ -78,6 +102,7 @@ export function NewProjectDialog({
         setInitialContactRole("");
         setInitialContactPhone("");
         setInitialContactEmail("");
+        setEmailError(null);
         onClose();
         onProjectCreated?.();
       } else {
@@ -87,7 +112,7 @@ export function NewProjectDialog({
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+    <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
       <DialogContent className="sm:max-w-xl max-h-[92vh] overflow-y-auto">
         <DialogHeader className="border-b border-border/80 pb-3">
           <div className="flex items-center gap-2">
@@ -140,7 +165,7 @@ export function NewProjectDialog({
               <select
                 value={segmentId}
                 onChange={(e) => setSegmentId(e.target.value)}
-                className="w-full h-8 rounded-lg border border-input bg-background px-2.5 text-xs text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="w-full h-8 rounded-lg border border-input bg-background px-2.5 text-xs text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer"
               >
                 <option value="">Selecione...</option>
                 {segments.map((s) => (
@@ -159,7 +184,7 @@ export function NewProjectDialog({
                 required
                 value={ownerId}
                 onChange={(e) => setOwnerId(e.target.value)}
-                className="w-full h-8 rounded-lg border border-input bg-background px-2.5 text-xs text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="w-full h-8 rounded-lg border border-input bg-background px-2.5 text-xs text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer"
               >
                 {users.map((u) => (
                   <option key={u.id} value={u.id}>
@@ -176,7 +201,7 @@ export function NewProjectDialog({
               <select
                 value={stage}
                 onChange={(e) => setStage(e.target.value)}
-                className="w-full h-8 rounded-lg border border-input bg-background px-2.5 text-xs text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="w-full h-8 rounded-lg border border-input bg-background px-2.5 text-xs text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer"
               >
                 {KANBAN_STAGES.map((s) => (
                   <option key={s.id} value={s.id}>
@@ -190,16 +215,28 @@ export function NewProjectDialog({
           {/* Valor Estimado & Previsão de Carta Convite */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="text-xs font-semibold text-foreground block mb-1">
-                Valor Estimado da Obra (R$)
-              </label>
-              <Input
-                type="number"
-                placeholder="Ex: 45000000"
-                value={estimatedValue}
-                onChange={(e) => setEstimatedValue(e.target.value)}
-                className="h-8 text-xs bg-background"
-              />
+              <div className="flex items-center justify-between mb-1">
+                <label className="text-xs font-semibold text-foreground block">
+                  Valor Estimado da Obra (R$)
+                </label>
+                <span className="text-[10px] text-muted-foreground">
+                  Máx: R$ 99 bilhões
+                </span>
+              </div>
+              <div className="relative">
+                <Input
+                  type="text"
+                  inputMode="numeric"
+                  placeholder="Ex: 1.000.000,00"
+                  value={estimatedValue}
+                  onChange={(e) => setEstimatedValue(maskCurrency(e.target.value))}
+                  onBlur={() => setEstimatedValue(formatCurrencyOnBlur(estimatedValue))}
+                  className="h-8 text-xs bg-background tabular-nums"
+                />
+              </div>
+              <span className="text-[10px] text-muted-foreground mt-0.5 block">
+                Apenas números com separação automática de pontos e vírgula.
+              </span>
             </div>
 
             <div>
@@ -221,37 +258,62 @@ export function NewProjectDialog({
               Primeiro Decisor Mapeado (Opcional)
             </span>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-              <Input
-                placeholder="Nome do Decisor (ex: Eng. Carlos)"
-                value={initialContactName}
-                onChange={(e) => setInitialContactName(e.target.value)}
-                className="h-8 text-xs bg-background"
-              />
-              <Input
-                placeholder="Papel (ex: Decisor Técnico)"
-                value={initialContactRole}
-                onChange={(e) => setInitialContactRole(e.target.value)}
-                className="h-8 text-xs bg-background"
-              />
-              <Input
-                placeholder="Telefone / WhatsApp"
-                value={initialContactPhone}
-                onChange={(e) => setInitialContactPhone(e.target.value)}
-                className="h-8 text-xs bg-background"
-              />
-              <Input
-                type="email"
-                placeholder="E-mail Corporativo"
-                value={initialContactEmail}
-                onChange={(e) => setInitialContactEmail(e.target.value)}
-                className="h-8 text-xs bg-background"
-              />
+              <div>
+                <Input
+                  placeholder="Nome do Decisor (ex: Eng. Carlos)"
+                  value={initialContactName}
+                  onChange={(e) => setInitialContactName(e.target.value)}
+                  className="h-8 text-xs bg-background"
+                />
+              </div>
+
+              <div>
+                <Input
+                  placeholder="Papel (ex: Decisor Técnico)"
+                  value={initialContactRole}
+                  onChange={(e) => setInitialContactRole(e.target.value)}
+                  className="h-8 text-xs bg-background"
+                />
+              </div>
+
+              <div>
+                <Input
+                  type="text"
+                  inputMode="tel"
+                  maxLength={15}
+                  placeholder="Telefone: (xx) xxxxx-xxxx"
+                  value={initialContactPhone}
+                  onChange={(e) => setInitialContactPhone(maskPhone(e.target.value))}
+                  className="h-8 text-xs bg-background tabular-nums"
+                />
+              </div>
+
+              <div>
+                <Input
+                  type="email"
+                  placeholder="E-mail: contato@empresa.com.br"
+                  value={initialContactEmail}
+                  onChange={(e) => {
+                    setInitialContactEmail(e.target.value);
+                    if (emailError) setEmailError(null);
+                  }}
+                  className={`h-8 text-xs bg-background ${
+                    emailError ? "border-red-500 focus-visible:ring-red-500" : ""
+                  }`}
+                />
+                {emailError && (
+                  <div className="flex items-center gap-1 text-[10px] text-red-500 font-medium mt-1">
+                    <AlertCircle className="size-3 shrink-0" />
+                    <span>{emailError}</span>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
           {/* Buttons */}
           <div className="flex justify-end gap-2 pt-2 border-t border-border">
-            <Button type="button" variant="ghost" size="sm" onClick={onClose} className="text-xs">
+            <Button type="button" variant="ghost" size="sm" onClick={handleClose} className="text-xs">
               Cancelar
             </Button>
             <Button type="submit" size="sm" disabled={isPending} className="gap-1.5 text-xs font-semibold">
@@ -264,4 +326,3 @@ export function NewProjectDialog({
     </Dialog>
   );
 }
-

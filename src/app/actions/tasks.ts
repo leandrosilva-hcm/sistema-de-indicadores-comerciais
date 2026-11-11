@@ -70,6 +70,15 @@ export async function recordTaskResultAndNextAction(data: RecordTaskResultInput)
       };
     }
 
+    // Impede agendamento de data de retorno retroativa (datas passadas)
+    const todayStr = new Intl.DateTimeFormat("fr-CA", { timeZone: "America/Sao_Paulo" }).format(new Date());
+    if (data.nextActionDueDate.trim() < todayStr) {
+      return {
+        success: false,
+        error: "A data de retorno / follow-up não pode ser retroativa. Selecione a data de hoje ou uma data futura.",
+      };
+    }
+
     if (!data.summary || !data.summary.trim()) {
       return {
         success: false,

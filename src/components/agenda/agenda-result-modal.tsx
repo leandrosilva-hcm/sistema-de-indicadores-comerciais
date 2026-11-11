@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { recordTaskResultAndNextAction } from "@/app/actions/tasks";
+import { getTodayDateString } from "@/lib/masks";
 import { FilterUser } from "@/types/kanban";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -59,6 +60,12 @@ export function AgendaResultModal({
       alert(
         "RN01 - Ação e Reação: Toda ação concluída exige o agendamento da próxima ação."
       );
+      return;
+    }
+
+    const todayStr = getTodayDateString();
+    if (nextActionDueDate < todayStr) {
+      alert("A data de retorno / follow-up não pode ser retroativa. Selecione a data de hoje ou uma data futura.");
       return;
     }
 
@@ -183,6 +190,7 @@ export function AgendaResultModal({
                 <Input
                   type="date"
                   required
+                  min={getTodayDateString()}
                   value={nextActionDueDate}
                   onChange={(e) => setNextActionDueDate(e.target.value)}
                   className="h-8 text-xs bg-background"

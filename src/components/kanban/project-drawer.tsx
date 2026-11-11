@@ -9,6 +9,15 @@ import {
   deleteProject,
 } from "@/app/actions/projects";
 import { FilterUser, FilterSegment, KANBAN_STAGES } from "@/types/kanban";
+import {
+  maskCurrency,
+  formatCurrencyOnBlur,
+  parseCurrencyToNumber,
+  numberToCurrencyInput,
+  maskPhone,
+  isValidEmail,
+  getTodayDateString,
+} from "@/lib/masks";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -107,7 +116,7 @@ export function ProjectDrawer({
         setEditProjectName(res.project.projectName);
         setEditSegmentId(res.project.segmentId || "");
         setEditStage(res.project.stage);
-        setEditEstimatedValue(res.project.estimatedValue ? String(res.project.estimatedValue) : "");
+        setEditEstimatedValue(numberToCurrencyInput(res.project.estimatedValue));
         setEditForecastDate(
           res.project.bidInvitationForecast
             ? new Date(res.project.bidInvitationForecast).toISOString().split("T")[0]
@@ -152,7 +161,7 @@ export function ProjectDrawer({
         projectName: editProjectName.trim(),
         segmentId: editSegmentId || null,
         stage: editStage || undefined,
-        estimatedValue: editEstimatedValue ? Number(editEstimatedValue) : null,
+        estimatedValue: parseCurrencyToNumber(editEstimatedValue),
         bidInvitationForecast: editForecastDate || null,
         ownerId: editOwnerId || undefined,
       });
@@ -205,6 +214,14 @@ export function ProjectDrawer({
       return;
     }
 
+    const todayStr = getTodayDateString();
+    if (nextActionDueDate < todayStr) {
+      alert(
+        "A data de retorno / follow-up não pode ser uma data retroativa. Por favor, escolha a data de hoje ou uma data futura."
+      );
+      return;
+    }
+
     startTransition(async () => {
       const res = await createInteractionWithReaction({
         projectId,
@@ -235,6 +252,11 @@ export function ProjectDrawer({
   const handleCreateContact = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!projectId || !newContactName.trim()) return;
+
+    if (newContactEmail.trim() && !isValidEmail(newContactEmail)) {
+      alert("O e-mail do contato deve conter '@' e um formato válido (ex: contato@empresa.com.br).");
+      return;
+    }
 
     startTransition(async () => {
       const res = await createClientContact({
@@ -427,12 +449,13 @@ export function ProjectDrawer({
                         Valor Estimado (R$)
                       </label>
                       <Input
-                        type="number"
-                        step="any"
-                        placeholder="Ex: 50000000"
+                        type="text"
+                        inputMode="numeric"
+                        placeholder="Ex: 1.000.000,00"
                         value={editEstimatedValue}
-                        onChange={(e) => setEditEstimatedValue(e.target.value)}
-                        className="h-8 text-xs bg-background"
+                        onChange={(e) => setEditEstimatedValue(maskCurrency(e.target.value))}
+                        onBlur={() => setEditEstimatedValue(formatCurrencyOnBlur(editEstimatedValue))}
+                        className="h-8 text-xs bg-background tabular-nums"
                       />
                     </div>
                     <div>
@@ -668,10 +691,13 @@ export function ProjectDrawer({
                             Telefone / WhatsApp
                           </label>
                           <Input
-                            placeholder="(11) 99999-9999"
+                            type="text"
+                            inputMode="tel"
+                            maxLength={15}
+                            placeholder="(xx) xxxxx-xxxx"
                             value={newContactPhone}
-                            onChange={(e) => setNewContactPhone(e.target.value)}
-                            className="h-8 text-xs bg-background"
+                            onChange={(e) => setNewContactPhone(maskPhone(e.target.value))}
+                            className="h-8 text-xs bg-background tabular-nums"
                           />
                         </div>
                         <div className="col-span-2">
@@ -926,6 +952,7 @@ export function ProjectDrawer({
                           <Input
                             type="date"
                             required
+                            min={getTodayDateString()}
                             value={nextActionDueDate}
                             onChange={(e) => setNextActionDueDate(e.target.value)}
                             className="h-8 text-xs bg-background"

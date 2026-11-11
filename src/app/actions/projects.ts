@@ -102,6 +102,15 @@ export async function createInteractionWithReaction(data: CreateInteractionInput
       };
     }
 
+    // Impede agendamento de data de retorno retroativa (datas passadas)
+    const todayStr = new Intl.DateTimeFormat("fr-CA", { timeZone: "America/Sao_Paulo" }).format(new Date());
+    if (data.nextActionDueDate.trim() < todayStr) {
+      return {
+        success: false,
+        error: "A data de retorno / follow-up não pode ser retroativa. Selecione a data de hoje ou uma data futura.",
+      };
+    }
+
     if (!data.summary || !data.summary.trim()) {
       return {
         success: false,
@@ -178,6 +187,13 @@ export async function createClientContact(data: CreateContactInput) {
       return { success: false, error: "Nome do decisor/contato é obrigatório." };
     }
 
+    if (data.email?.trim()) {
+      const email = data.email.trim();
+      if (!email.includes("@") || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
+        return { success: false, error: "O e-mail informado é inválido. Certifique-se de incluir '@' e domínio válido." };
+      }
+    }
+
     const contact = await prisma.clientContact.create({
       data: {
         projectId: data.projectId,
@@ -226,6 +242,26 @@ export async function createProject(data: CreateProjectInput) {
     }
     if (!data.ownerId) {
       return { success: false, error: "Responsável comercial é obrigatório (RN04)." };
+    }
+
+    if (data.estimatedValue !== undefined && data.estimatedValue !== null) {
+      const val = Number(data.estimatedValue);
+      if (isNaN(val) || val < 0) {
+        return { success: false, error: "Valor estimado da obra inválido." };
+      }
+      if (val > 99_999_999_999.99) {
+        return { success: false, error: "O valor estimado da obra não pode ultrapassar R$ 99.999.999.999,99." };
+      }
+    }
+
+    if (data.initialContactEmail?.trim()) {
+      const email = data.initialContactEmail.trim();
+      if (!email.includes("@") || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
+        return {
+          success: false,
+          error: "O e-mail do decisor informado é inválido. Certifique-se de incluir '@' e domínio válido (ex: contato@empresa.com.br).",
+        };
+      }
     }
 
     const created = await prisma.$transaction(async (tx) => {
@@ -287,6 +323,16 @@ export async function updateProjectDetails(data: UpdateProjectInput) {
   try {
     if (!data.projectId) {
       return { success: false, error: "ID do projeto é obrigatório." };
+    }
+
+    if (data.estimatedValue !== undefined && data.estimatedValue !== null) {
+      const val = Number(data.estimatedValue);
+      if (isNaN(val) || val < 0) {
+        return { success: false, error: "Valor estimado da obra inválido." };
+      }
+      if (val > 99_999_999_999.99) {
+        return { success: false, error: "O valor estimado da obra não pode ultrapassar R$ 99.999.999.999,99." };
+      }
     }
 
     const updated = await prisma.project.update({

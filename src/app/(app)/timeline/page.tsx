@@ -124,9 +124,6 @@ async function TimelineDataLoader() {
                 <Clock className="size-4 text-primary" />
                 Linha do Tempo Cronológica
               </CardTitle>
-              <p className="text-xs text-muted-foreground mt-1">
-                Histórico cumulativo completo de abordagens comerciais, reuniões e alinhamentos técnicos com decisores.
-              </p>
             </div>
             <Link
               href="/kanban"

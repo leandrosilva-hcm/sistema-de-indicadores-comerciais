@@ -122,7 +122,7 @@ export function NewProjectDialog({
             </DialogTitle>
           </div>
           <DialogDescription className="text-xs text-muted-foreground mt-0.5">
-            Cadastre a empresa e a obra específica para alimentar o pipeline comercial.
+            Cadastre a empresa e a obra específica para alimentar as oportunidades em negociação.
           </DialogDescription>
         </DialogHeader>
 

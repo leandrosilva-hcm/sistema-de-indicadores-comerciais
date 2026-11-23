@@ -59,14 +59,14 @@ export async function recordTaskResultAndNextAction(data: RecordTaskResultInput)
     if (!data.nextActionTitle || !data.nextActionTitle.trim()) {
       return {
         success: false,
-        error: "RN01: O agendamento da próxima ação é estritamente obrigatório.",
+        error: "O agendamento da próxima ação é estritamente obrigatório.",
       };
     }
 
     if (!data.nextActionDueDate || !data.nextActionDueDate.trim()) {
       return {
         success: false,
-        error: "RN01: A data de retorno da próxima ação é estritamente obrigatória.",
+        error: "A data de retorno da próxima ação é estritamente obrigatória.",
       };
     }
 

@@ -209,7 +209,7 @@ export function ProjectDrawer({
 
     if (!nextActionTitle.trim() || !nextActionDueDate) {
       alert(
-        "RN01 - Ação e Reação: É estritamente obrigatório preencher a data de retorno e a descrição da próxima ação."
+        "É estritamente obrigatório preencher a data de retorno e a descrição da próxima ação."
       );
       return;
     }

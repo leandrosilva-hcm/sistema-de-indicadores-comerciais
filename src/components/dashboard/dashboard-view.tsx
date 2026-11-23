@@ -352,7 +352,7 @@ export function DashboardView({
               <span className="font-semibold text-foreground">
                 {formatCurrencyMillions(kpis.activeTotalValue)}
               </span>{" "}
-              em pipeline
+              em negociação
             </p>
           </CardContent>
         </Card>
@@ -547,14 +547,14 @@ export function DashboardView({
         </Card>
       </div>
 
-      {/* Visão de Pipeline por Estágio */}
+      {/* Visão de Obras em Negociação por Estágio */}
       <Card className="border border-border/80 shadow-xs">
         <CardHeader className="border-b border-border/60 pb-3">
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="text-sm font-bold flex items-center gap-2">
                 <Briefcase className="size-4 text-primary" />
-                Pipeline por Estágio do Funil Comercial
+                Valores em Negociação por Estágio do Funil Comercial
               </CardTitle>
               <p className="text-xs text-muted-foreground mt-0.5">
                 Volume financeiro estimado acumulado em cada etapa

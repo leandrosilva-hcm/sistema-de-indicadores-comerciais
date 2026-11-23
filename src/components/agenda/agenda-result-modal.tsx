@@ -58,7 +58,7 @@ export function AgendaResultModal({
 
     if (!nextActionTitle.trim() || !nextActionDueDate) {
       alert(
-        "RN01 - Ação e Reação: Toda ação concluída exige o agendamento da próxima ação."
+        "Ação e Reação: Toda ação concluída exige o agendamento da próxima ação."
       );
       return;
     }
@@ -104,7 +104,7 @@ export function AgendaResultModal({
             </DialogTitle>
           </div>
           <DialogDescription className="text-xs text-muted-foreground mt-1">
-            Esta ação foi marcada como executada. Registre o que foi alinhado com o cliente e defina o próximo passo (RN01).
+            Esta ação foi marcada como executada. Registre o que foi alinhado com o cliente e defina o próximo passo.
           </DialogDescription>
         </DialogHeader>
 
@@ -179,7 +179,7 @@ export function AgendaResultModal({
           <div className="p-3.5 rounded-lg border-2 border-primary/20 bg-primary/5 space-y-3">
             <div className="flex items-center gap-1.5 text-xs font-bold text-primary">
               <CalendarCheck2 className="size-4" />
-              <span>Próxima Ação Obrigatória (Ação e Reação — RN01)</span>
+              <span>Próxima Ação Obrigatória</span>
             </div>
 
             <div className="grid grid-cols-2 gap-3">

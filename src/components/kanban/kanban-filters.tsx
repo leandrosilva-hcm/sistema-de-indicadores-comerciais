@@ -144,7 +144,7 @@ export function KanbanFilters({
           <div className="flex items-center gap-1.5 bg-[#dc911b]/12 px-2.5 py-1 rounded-lg border border-[#dc911b]/30">
             <DollarSign className="size-3.5 text-[#dc911b]" />
             <span className="text-xs text-[#9a600a] dark:text-[#f3b558] font-semibold">
-              Pipeline:
+              Em Negociação:
             </span>
             <span className="text-xs font-bold text-foreground tabular-nums">
               {formatTotal(totalPipelineValue)}
